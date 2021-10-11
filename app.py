@@ -29,7 +29,7 @@ def login():
 
         # connect to mysql and run queries
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO users(username, password) VALUES(%s, %s)", (username, email))
+        cur.execute("INSERT INTO login_info(username, password) VALUES(%s, %s)", (username, email))
         mysql.connection.commit() #save changes in the database
         cur.close()
         return 'success'
