@@ -1,0 +1,7 @@
+.field > input[type="radio"] {
+    display: block;
+}
+
+.radio-choice {
+    display: inline-block;
+}
