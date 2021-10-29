@@ -5,10 +5,10 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
     </head>
     <body>
-    <form action="POST" class="query-form">
+    <form method="post" class="query-form">
         <div class="field">
             <p class="field-label">Select States (select multiple with CTRL-click)</p>
-            <select id="states" name="states" multiple>
+            <select id="state" name="state" multiple>
                 <option value="AL">Alabama</option>
                 <option value="AK">Alaska</option>
                 <option value="AZ">Arizona</option>

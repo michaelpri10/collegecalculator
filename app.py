@@ -1,17 +1,20 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_mysqldb import MySQL
 import yaml
+from query_schools import generate_query
 
 app = Flask(__name__)
+mysql = MySQL(app)
 
 path = "/cse30246/collegecalculator"
 
-#configure db
-db = yaml.load(open('db.yaml'))
+# configure db
+db = yaml.load(open('db.yaml'), Loader=yaml.Loader)
 app.config['MYSQL_HOST']= db['mysql_host']
 app.config['MYSQL_USER'] = db['mysql_user']
 app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
+app.secret_key = "databaseproject"
 
 @app.route(path + "/", methods=['GET', 'POST'])
 def home():
@@ -36,10 +39,19 @@ def login():
 @app.route(path + "/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
-        user_details = request.form
-        pass
+        parameters = request.form
+        columns, sql_query = generate_query(parameters)
+        session['columns'] = columns
+        session['results'] = results
+        return redirect(url_for('results'))
 
     return render_template("search.html")
+
+@app.route(path + "/results")
+def results():
+    columns = session['columns']
+    results = session['results']
+    return render_template('results', columns=columns, results=results)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
