@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, session, url_for
 from flask_mysqldb import MySQL
 import yaml
-import json
+from collections import namedtuple
 from query_schools import generate_query
 
 app = Flask(__name__)
@@ -56,7 +56,9 @@ def search():
 def results():
     columns = session['columns']
     results = session['results']
-    return render_template('results.html', columns=columns, results=results)
+    University = namedtuple('University', columns)
+    universities = [University(*school) for school in results]
+    return render_template('results.html', universities=universities)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
