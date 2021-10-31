@@ -17,6 +17,7 @@ app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
 app.secret_key = "databaseproject"
 
+#login window
 @app.route(path + "/", methods=['GET', 'POST'])
 def login():
 	if request.method == 'POST': 
@@ -35,7 +36,7 @@ def login():
 		mysql.connection.commit() #save changes in the database
 		cur.close()
 		
-		if len(login_exists) is not 0:
+		if len(login_exists) != 0:
 			login_username = username
 			return redirect(url_for('search'))
 		else:
@@ -43,6 +44,7 @@ def login():
 	
 	return render_template('login.html')
 
+# create account window
 @app.route(path + "/create_account", methods = ["GET", "POST"])
 def create_account():
 	if request.method == "POST":
@@ -57,7 +59,7 @@ def create_account():
 		cur.execute("SELECT * from login_information where username = '%s'" % new_username)
 		login_exists = cur.fetchall()
 
-		if len(login_exists) is not 0:
+		if len(login_exists) != 0:
 			return 'Username already in use. Please choose another.'
 			return redirect(url_for('/create_account'))
 		else:
@@ -65,10 +67,54 @@ def create_account():
 			cur.execute("INSERT INTO login_information(username, password) VALUES(%s, %s)", (new_username, new_password))
 			mysql.connection.commit()	
 			return redirect(url_for('login'))
-		
+
 		cur.close()
 
 	return render_template('create_account.html')
+
+# user settings window
+@app.route(path + "/user_settings", methods = ["GET", "POST"])
+def user_settings():
+	if request.method == "POST":
+		form_details = request.form
+		cur = mysql.connection.cursor()
+
+		#Update account password
+		if form_details['submit_button'] == 'update':
+			username = form_details['username']
+			old_password = form_details['oldpassword']
+			new_password = form_details['newpassword']
+			
+			#check if information is correct
+			cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (username, old_password))
+			login_exists = cur.fetchall()
+
+			if len(login_exists) == 0:
+				return 'Incorrect account information. Account settings not saved.'
+			else:
+				cur.execute("UPDATE login_information SET password='%s' WHERE username='%s'" % (new_password, username))
+				mysql.connection.commit()
+				cur.close()
+				return 'Password updated.'
+
+		#Delete Account
+		elif form_details['submit_button'] == 'delete':
+			username = form_details['delete_user']
+			password = form_details['delete_pass']
+			
+			#check if information is correct
+			cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (username, password))
+			login_exists = cur.fetchall()	
+
+			if len(login_exists) == 0:
+				return 'Incorrect account information. Account settings not saved.'
+			else:
+				cur.execute("DELETE FROM login_information where username='%s' and password='%s'" % (username, password))
+				mysql.connection.commit()
+				cur.close()
+			return 'Account Deleted.'
+
+	return render_template("user_settings.html")
 
 @app.route(path + "/search", methods=["GET", "POST"])
 def search():
