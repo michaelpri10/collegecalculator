@@ -5,3 +5,35 @@
 .radio-choice {
     display: inline-block;
 }
+
+.card {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid black;
+}
+
+.card > div {
+    border-right: 1px solid black;
+    padding-right: 0.3vw;
+    padding-left: 0.3vw;
+}
+
+.basic-info {
+    width: 18vw;
+}
+
+.school-features {
+    width: 14vw;
+}
+
+.school-stats {
+    width: 16vw;
+}
+
+.admission-stats {
+    width: 20vw;
+}
+
+.tuition-stats {
+    width: 18vw;
+}
