@@ -43,8 +43,6 @@ def login():
                         return redirect(url_for('search'))
                 else:
                         return 'Incorrect username or password'
-        if "logged_in" in session and session["logged_in"]:
-                return redirect(url_for('search'))
         
         return render_template('login.html')
 
