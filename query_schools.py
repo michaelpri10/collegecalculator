@@ -71,12 +71,12 @@ ENROLLMENT_BOUNDS = {
 }
 
 ADMISSION_BOUNDS = {
-    1: [0, 10],
-    2: [10, 20],
-    3: [20, 30],
-    4: [30, 50],
-    5: [50, 75],
-    6: [75, 100]
+    0: [0, 10],
+    1: [10, 20],
+    2: [20, 30],
+    3: [30, 50],
+    4: [50, 75],
+    5: [75, 100]
 }
 
 def build_query_string(university, school_info, admission_stats, financial_stats):
@@ -137,11 +137,17 @@ def build_query_string(university, school_info, admission_stats, financial_stats
 
     #  Admission stat filters
     if admission_stats["total_applicants"]:
-        where_str = f"{where_str} adm.{field} <= {admission_stats['total_applicants']} AND"
+        where_str = f"{where_str} adm.total_applicants <= {admission_stats['total_applicants']} AND"
     if len(admission_stats["admission_rate"]):
         print(admission_stats["admission_rate"])
-        lower_bound = ADMISSION_BOUNDS[min(admission_stats["admission_rate"])][0]
-        upper_bound = ADMISSION_BOUNDS[max(admission_stats["admission_rate"])][1]
+        lowest_choice = min(admission_stats["admission_rate"])
+        highest_choice = max(admission_stats["admission_rate"])
+        lower_bound = 0
+        upper_bound = 100
+        if lowest_choice in ADMISSION_BOUNDS:
+            lower_bound = ADMISSION_BOUNDS[lowest_choice][0]
+        if highest_choice in ADMISSION_BOUNDS:
+            upper_bound = ADMISSION_BOUNDS[highest_choice][1]
         where_str = f"{where_str} adm.admission_rate >= {lower_bound} AND adm.admission_rate <= {upper_bound} AND"
 
     if admission_stats["sat_reading"]:
@@ -152,7 +158,7 @@ def build_query_string(university, school_info, admission_stats, financial_stats
         where_str = f"{where_str} adm.sat_math_25 <= {score} AND"
     if admission_stats["act"]:
         score = admission_stats["sat_math"]
-        where_str = f"{where_str} adm.act <= {score} AND"
+        where_str = f"{where_str} adm.act_25 <= {score} AND"
 
     # Take off AND at end of WHERE block
     where_str = where_str[:-4]
