@@ -1,4 +1,4 @@
-mysql_host: 'db.cse.nd.edu'
+mysql_host: 'localhost'
 mysql_user: 'mprieto2'
 mysql_password: 'password'
 mysql_db: 'mprieto2'
