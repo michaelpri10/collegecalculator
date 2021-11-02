@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Account Settings</title>
+	<link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+<h1></h1>
+<div class="login" id="login">
+        <h3>Profile page for {{ username }}</h3>
+
+	<h1>Change Password</h1>
+  	<form method="POST" name="update_delete_form">
+		<input type="text" name="username" placeholder="Username"/><br><br>
+		<input type="password" name="oldpassword" placeholder="Old Password"/><br>
+		<input type="password" name="newpassword" placeholder="New Password"/><br><br>
+		<button type="submit" name="submit_button" value="update">Change Password</button>
+
+	<h1>Delete Account</h1>
+	<input type="text" name="delete_user" placeholder="Username"/><br>
+	<input type="password" name="delete_pass" placeholder="Password"/><br><br>	
+	<button type="submit" name="submit_button" value="delete">Delete Account</button>
+	</form>
+</div>
+</body>
+</html>

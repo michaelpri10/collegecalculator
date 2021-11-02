@@ -45,7 +45,7 @@ def generate_query(parameters):
     
     for field in admission_stats:
         if field == 'admission_rate':
-            admission_stats[field] = parameters.getlist(field)
+            admission_stats[field] = [int(i) for i in parameters.getlist(field)]
         else:
             param = parameters.get(field)
             if param.isdigit():
@@ -71,16 +71,16 @@ ENROLLMENT_BOUNDS = {
 }
 
 ADMISSION_BOUNDS = {
-    1: [0, 10],
-    2: [10, 20],
-    3: [20, 30],
-    4: [30, 50],
-    5: [50, 75],
-    6: [75, 100]
+    0: [0, 10],
+    1: [10, 20],
+    2: [20, 30],
+    3: [30, 50],
+    4: [50, 75],
+    5: [75, 100]
 }
 
 def build_query_string(university, school_info, admission_stats, financial_stats):
-    select_str = "SELECT u.name, u.city, u.state, u.website, u.total_enrollment, si.control, si.religious, si.accepts_ap_credit, si.study_abroad, si.offers_rotc, si.has_football, si.has_basketball, si.ncaa_member, si.retention_rate, si.graduation_rate, adm.total_applicants, adm.total_admitted, adm.admission_rate, adm.male_applicants, adm.female_applicants, adm.male_admitted, adm.female_admitted, adm.sat_rw_25, adm.sat_rw_75, adm.sat_math_25, adm.sat_math_75, adm.act_25, adm.act_75, fin.in_state_price, fin.out_of_state_price, fin.average_price_after_aid, fin.percent_given_aid"
+    select_str = "SELECT u.name, u.city, u.state, u.website, u.total_enrollment, si.control, si.religious, si.accepts_ap_credit, si.study_abroad, si.offers_rotc, si.has_football, si.has_basketball, si.ncaa_member, si.retention_rate, si.graduation_rate, adm.total_applicants, adm.total_admitted, adm.admission_rate, adm.male_applicants, adm.female_applicants, adm.male_admitted, adm.female_admitted, adm.sat_rw_25, adm.sat_rw_75, adm.sat_math_25, adm.sat_math_75, adm.act_25, adm.act_75, fin.in_state_price, fin.out_of_state_price, fin.average_price_after_aid, fin.percent_given_aid, di.percent_american_indian_native_alaskan, di.percent_asian, di.percent_hawaiian_pacific_islander, di.percent_black, di.percent_white, di.percent_hispanic, di.percent_other, di.percent_two_races"
 
     from_str = "FROM university as u, school_info as si, admission_stats as adm, financial_stats as fin, diversity_stats as di"
     where_str = "WHERE u.university_id = si.university_id AND u.university_id = adm.university_id AND u.university_id = fin.university_id AND u.university_id = di.university_id AND"
@@ -137,10 +137,17 @@ def build_query_string(university, school_info, admission_stats, financial_stats
 
     #  Admission stat filters
     if admission_stats["total_applicants"]:
-        where_str = f"{where_str} adm.{field} <= {admission_stats['total_applicants']} AND"
+        where_str = f"{where_str} adm.total_applicants <= {admission_stats['total_applicants']} AND"
     if len(admission_stats["admission_rate"]):
-        lower_bound = ADMISSION_BOUNDS[min(admission_stats["admission_rate"])][0]
-        upper_bound = ADMISSION_BOUNDS[max(admission_stats["admission_rate"])][1]
+        print(admission_stats["admission_rate"])
+        lowest_choice = min(admission_stats["admission_rate"])
+        highest_choice = max(admission_stats["admission_rate"])
+        lower_bound = 0
+        upper_bound = 100
+        if lowest_choice in ADMISSION_BOUNDS:
+            lower_bound = ADMISSION_BOUNDS[lowest_choice][0]
+        if highest_choice in ADMISSION_BOUNDS:
+            upper_bound = ADMISSION_BOUNDS[highest_choice][1]
         where_str = f"{where_str} adm.admission_rate >= {lower_bound} AND adm.admission_rate <= {upper_bound} AND"
 
     if admission_stats["sat_reading"]:
@@ -151,10 +158,10 @@ def build_query_string(university, school_info, admission_stats, financial_stats
         where_str = f"{where_str} adm.sat_math_25 <= {score} AND"
     if admission_stats["act"]:
         score = admission_stats["sat_math"]
-        where_str = f"{where_str} adm.act <= {score} AND"
+        where_str = f"{where_str} adm.act_25 <= {score} AND"
 
     # Take off AND at end of WHERE block
     where_str = where_str[:-4]
-    columns = select_str.split(' ', 1)[1].split(', ')
+    columns = [i.split('.')[1] for i in select_str.split(' ', 1)[1].split(', ')]
 
     return (columns, f"{select_str}\n{from_str}\n{where_str}\n{group_str}\n{order_str};")
