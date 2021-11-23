@@ -37,3 +37,11 @@
 .tuition-stats {
     width: 18vw;
 }
+
+#majors-step, #study-fields {
+    display: none;
+}
+
+.form-field {
+    width: 20vw;
+}

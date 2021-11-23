@@ -132,6 +132,10 @@ def search():
 
     return render_template("search.html")
 
+@app.route(path + "/main", methods=["GET", "POST"])
+def find_colleges():
+    return render_template("user_form.html")
+
 """
 @app.route(path + "/results")
 def results():

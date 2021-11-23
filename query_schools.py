@@ -63,11 +63,10 @@ def generate_query(parameters):
     return build_query_string(university, school_info, admission_stats, financial_stats)
 
 ENROLLMENT_BOUNDS = {
-    0: [0, 1000],
-    1: [1000, 5000],
-    2: [5000, 10000],
-    3: [10000, 25000],
-    4: [25000, 10000000],
+    0: [0, 5000],
+    1: [5000, 15000],
+    2: [15000, 30000],
+    3: [30000, 10000000],
 }
 
 ADMISSION_BOUNDS = {
