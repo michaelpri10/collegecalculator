@@ -38,8 +38,8 @@
     width: 18vw;
 }
 
-#majors-step, #study-fields {
-    display: none;
+#majors-step {
+    // display: none;
 }
 
 .form-field {
