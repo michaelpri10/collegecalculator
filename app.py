@@ -134,6 +134,10 @@ def search():
 
 @app.route(path + "/main", methods=["GET", "POST"])
 def find_colleges():
+    if request.method == "POST":
+        parameters = request.form
+        query = generate_query(parameters)
+        print(query)
     return render_template("user_form.html")
 
 """

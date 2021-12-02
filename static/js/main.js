@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $("#state").select2();
-    $("#distance").select2();
+    $("#state-location").select2();
     $("#campus-location").select2();
     $("#enrollment").select2();
     $("#study-fields").select2();
@@ -32,6 +32,7 @@ $(document).ready(function() {
     var majors_step = document.querySelector("#majors-step");
     var finance_step = document.querySelector("#finance-step");
     var other_step = document.querySelector("#other-step");
+    var priority_step = document.querySelector("#priority-step");
 
     var location_button = document.querySelector("#location-button");
     var majors_button = document.querySelector("#majors-button");
@@ -50,10 +51,15 @@ $(document).ready(function() {
         finance_step.style.display = "none";
         other_step.style.display = "flex";
     });
+    other_button.addEventListener("click", function() {
+        other_step.style.display = "none";
+        priority_step.style.display = "flex";
+    });
 
     var majors_back = document.querySelector("#majors-back");
     var finance_back = document.querySelector("#finance-back");
     var other_back = document.querySelector("#other-back");
+    var priority_back = document.querySelector("#priority-back");
 
     majors_back.addEventListener("click", function() {
         majors_step.style.display = "none";
@@ -67,4 +73,22 @@ $(document).ready(function() {
         other_step.style.display = "none";
         finance_step.style.display = "flex";
     });
+    priority_back.addEventListener("click", function() {
+        priority_step.style.display = "none";
+        other_step.style.display = "flex";
+    });
+
+    var rankings = document.querySelectorAll(".radio-rank");
+    for (var i = 0; i < rankings.length; i++) {
+        rankings[i].addEventListener("click", function() {
+            console.log(this);
+            var num = this.classList[1];
+            var same = document.querySelectorAll(".radio-rank."+num);
+            for (var j = 0; j < same.length; j++) {
+                console.log(same[j]);
+                same[j].checked = false;
+            }
+            this.checked = true;
+        });
+    }
 });

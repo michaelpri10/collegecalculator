@@ -1,12 +1,11 @@
 <p class="field-label">Which state do you live in?</p>
 {% include 'forms/states.html' %}
 
-<p class="field-label">How far from your home state do you want to be?</p>
-<select id="distance" name="distance" class="form-field js-basic-example-single">
-    <option value="in-state">In-state</option>
-    <option value="neighboring">Neighboring/nearby state</option>
-    <option value="far">Far away</option>
-    <option value="anywhere">Any state</option>
+<p class="field-label">What preference do you have for a school's state?</p>
+<select id="state-location" name="state_location" class="form-field js-basic-example-single">
+    <option value="0">Any state</option>
+    <option value="1">In-state</option>
+    <option value="2">Out-of-state</option>
 </select>
 
 <p class="field-label">What is your preferred type of location? (Choose multiple)</p>

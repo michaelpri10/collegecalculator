@@ -38,7 +38,7 @@
     width: 18vw;
 }
 
-#majors-step, #finance-step, #other-step {
+#majors-step, #finance-step, #other-step, #priority-step {
     display: none;
 }
 
@@ -90,10 +90,6 @@
     border-color: white;
 }
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: #1B99D4;
-}
-
 .next-button {
     background-color: #1B99D4;
     margin: 10px auto;
@@ -103,4 +99,18 @@
     color: white;
     font-size: 1.25em;
     font-weight: bold;
+    cursor: pointer;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #1B99D4;
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-results__option {
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
 }
