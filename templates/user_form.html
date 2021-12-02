@@ -2,9 +2,13 @@
 <html>
 <head>
     <title>Fields of Study</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </head>
@@ -12,35 +16,47 @@
 <body>
 
 <form method="post" class="user-form">
-
     <div class="form-step" id="location-step">
-        <p class="step-heading">Location Preferences</p>
-        <p class="field-label">Which state do you live in?</p>
-        {% include 'forms/states.html' %}
-        <p class="field-label">How far from your home state do you want to be?</p>
-        {% include 'forms/distance.html' %}
-        <p class="field-label">What is your preferred type of location? (Choose multiple)</p>
+        <div class="step-heading">Location Preferences</div>
         {% include 'forms/location.html' %}
-        <p class="field-label">What is your preferred college size? (Choose multiple)</p>
-        {% include 'forms/sizes.html' %}
+        <button type="button" class="next-button" id="location-button">
+            Next Step ►
+        </button>
     </div>
 
     <div class="form-step" id="majors-step">
-        <p class="step-heading">Academic Preferences</p>
-        <p class="field-label">Select areas of study you are interested in:</p>
+        <div class="step-heading">
+            <div id="majors-back" class="back-button">↩</div>
+            Academic Preferences
+        </div>
         {% include 'forms/majors.html' %}
-        <p class="field-label">Enter your SAT/ACT scores:</p>
+        <hr class="separator">
         {% include 'forms/scores.html' %}
+        <button type="button" class="next-button" id="majors-button">
+            Next Step ►
+        </button>
     </div>
 
     <div class="form-step" id="finance-step">
-        <p class="step-heading">Financial Preferences</p>
+        <div class="step-heading">
+            <div id="finance-back" class="back-button">↩</div>
+            Financial Preferences
+        </div>
         {% include 'forms/finance.html' %}
+        <button type="button" class="next-button" id="finance-button">
+            Next Step ►
+        </button>
     </div>
 
-    <div class="form-step" id="finance-step">
-        <p class="step-heading">Other Preferences</p>
+    <div class="form-step" id="other-step">
+        <div class="step-heading">
+            <div id="other-back" class="back-button">↩</div>
+            Other Preferences
+        </div>
         {% include 'forms/other.html' %}
+        <button type="submit" class="next-button" id="other-button">
+            Submit
+        </button>
     </div>
 
 </form>

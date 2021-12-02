@@ -1,6 +1,13 @@
-<span class="pre-label">SAT Math Score (200-800): </span>
-<input id="sat-math" name="sat_math" class="text-search" type="number" min="200" max="800"></input><br>
-<span class="pre-label">SAT Reading Score (200-800): </span>
-<input id="sat-reading" name="sat_reading" class="text-search" type="number" min="200" max="800"></input><br>
-<span class="pre-label">ACT Score (1-36): </span>
-<input id="act" name="act" class="text-search" type="number" min="1" max="36"></input><br>
+<p class="field-label">Enter your SAT/ACT scores:</p>
+
+<p class="field-label">SAT Math Score (200-800)</p>
+<input id="sat-math" name="sat_math" class="slider-search" type="range" min="200" max="800" step="10" value="0"/>
+<p class="slider-output">Score: <span id="sat-math-output"></span></p>
+
+<p class="field-label">SAT Reading Score (200-800)</p>
+<input id="sat-reading" name="sat_reading" class="slider-search" type="range" min="200" max="800" step="10" value="0"/>
+<p class="slider-output">Score: <span id="sat-reading-output"></span></p>
+
+<p class="field-label">ACT Score (200-800)</p>
+<input id="act" name="act" class="slider-search" type="range" min="1" max="36" step="1" value="0"/>
+<p class="slider-output">Score: <span id="act-output"></span></p>

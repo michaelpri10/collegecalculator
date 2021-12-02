@@ -38,10 +38,69 @@
     width: 18vw;
 }
 
-#majors-step {
-    // display: none;
+#majors-step, #finance-step, #other-step {
+    display: none;
 }
 
-.form-field {
-    width: 20vw;
+.user-form {
+    width: 30vw;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 1vw;
+    margin: 0 auto;
+    background-color: #05445E;
+}
+
+.form-step {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    color: white;
+}
+
+.step-heading {
+    font-size: 2em;
+    font-weight: bold;
+    display: inline;
+    text-align: center;
+}
+
+.back-button {
+    cursor: pointer;
+    float: left;
+}
+
+.field-label, .slider-output {
+    font-weight: 500;
+}
+
+.separator {
+    width: 100%;
+}
+
+.radio-label {
+    display: inline;
+}
+
+.text-search {
+    min-height: 28px;
+    border-radius: 4px;
+    border-color: white;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #1B99D4;
+}
+
+.next-button {
+    background-color: #1B99D4;
+    margin: 10px auto;
+    padding: 5px;
+    border-radius: 10px;
+    width: 50%;
+    color: white;
+    font-size: 1.25em;
+    font-weight: bold;
 }
