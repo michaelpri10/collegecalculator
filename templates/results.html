@@ -1,104 +1,27 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Search Colleges</title>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-    </head>
-    <body>
-        <h2>Search Results</h2>
-        <a href="{{ url_for('search') }}">Back to search</a>
-        {% for university in universities %}
-        <div class="card">
-            <div class="basic-info">
-                <h4>{{ university.name }}</h4>
-                <p>{{ university.city }}, {{ university.state }}</p>
-                <a href="{{ university.website }}">Website</a>
-            </div>
-            <div class="school-features">
-                Features
-                <ul>
-                    <li>{{ university.control }}</li>
-                    {% if university.religious %}
-                    <li>Religious affiliation</li>
-                    {% else %}
-                    <li>Non-religious</li>
-                    {% endif %}
-                    {% if university.accepts_ap_credit %}
-                    <li>Accepts AP Credit</li>
-                    {% endif %}
-                    {% if university.offers_rotc %}
-                    <li>Offers ROTC</li>
-                    {% endif %}
-                    {% if university.study_abroad%}
-                    <li>Study Abroad Program</li>
-                    {% endif %}
-                    {% if university.ncaa_member %}
-                    <li>NCAA Member</li>
-                    {% else %}
-                    <li>Not in NCAA</li>
-                    {% endif %}
-                    <ul>
-                    {% if university.has_football %}
-                    <li>Football</li>
-                    {% endif %}
-                    {% if university.has_basketball %}
-                    <li>Basketball</li>
-                    {% endif %}
-                    </ul>
-                </ul>
-            </div>
-            <div class="school-stats">
-                School Statistics
-                <ul>
-                    <li>Total Enrollment: {{ university.total_enrollment or "No Data" }}</li>
-                    <li>Graduation Rate: {{ "{}%".format(university.graduation_rate) if university.graduation_rate else "No Data" }}</li>
-                    <li>Retention Rate: {{ "{}%".format(university.retention_rate) if university.retention_rate else "No Data" }}</li>
-                </ul>
-            </div>
-            <div class="admission-stats">
-                Admission Statistics (Class of 2023)
-                <ul>
-                    <li>Applicants: {{ university.total_applicants or "No Data" }}</li>
-                    <li>Admitted Students: {{ university.total_admitted or "No Data"}}</li>
-                    <li>Admission Rate: {{ "{}%".format(university.admission_rate) if university.admission_rate else "No Data" }}</li>
-                    {% if university.sat_rw_25 %}
-                    <li>SAT Reading Mid 50%: {{ university.sat_rw_25 }}-{{ university.sat_rw_75 }}</li>
-                    <li>SAT Math Mid 50%: {{ university.sat_math_25 }}-{{ university.sat_math_75 }}</li>
-                    {% else %}
-                    <li>SAT Reading Mid 50%: No Data</li>
-                    <li>SAT Math Mid 50%: No Data</li>
-                    {% endif %}
-                    {% if university.act_25 %}
-                    <li>ACT Mid 50%: {{ university.act_25 }}-{{ university.act_75 }}</li>
-                    {% else %}
-                    <li>ACT Mid 50%: No Data</li>
-                    {% endif %}
-                </ul>
-            </div>
-            <div class="tuition-stats">
-                Tuition Statistics
-                <ul>
-                    <li>In-State Price: {{ "${}".format(university.in_state_price) if university.in_state_price else "No Data" }}</li>
-                    <li>Out-of-State Price: {{ "${}".format(university.out_of_state_price) if university.out_of_state_price else "No Data" }}</li>
-                    <li>Average Price After Aid: {{ "${}".format(university.average_price_after_aid) if university.average_price_after_aid else "No Data" }}</li>
-                    <li>Students Given Aid: {{ "{}%".format(university.percent_given_aid) if university.percent_given_aid else "No Data" }}</li>
-                </ul>
-            </div>
-            <div class="diversity-stats">
-                Demographics
-                <ul>
-                    <li>White: {{ "{}%".format(university.percent_white) if university.percent_white != None else "No Data" }}</li>
-                    <li>Black or African American: {{ "{}%".format(university.percent_black) if university.percent_black != None else "No Data" }}</li>
-                    <li>Hispanic: {{ "{}%".format(university.percent_hispanic) if university.percent_hispanic != None else "No Data" }}</li>
-                    <li>Asian: {{ "{}%".format(university.percent_asian) if university.percent_asian != None else "No Data" }}</li>
-                    <li>Hawaiian or Pacific Islander: {{ "{}%".format(university.percent_hawaiian_pacific_islander) if university.percent_hawaiian_pacific_islander != None else "No Data" }}</li>
-                    <li>American Indian or Native Alaskan: {{ "{}%".format(university.percent_american_indian_native_alaskan) if university.percent_hawaiian_pacific_islander != None else "No Data" }}</li>
-                    <li>Multi-Ethnic: {{ "{}%".format(university.percent_two_races) if university.percent_percent_two_races != None else "No Data" }}</li>
-                    <li>Other: {{ "{}%".format(university.percent_other) if university.percent_other != None else "No Data" }}</li>
-                </ul>
-            </div>
+<head>
+    <title>Search Colleges</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="result-container">
+        {% for uni in universities %}
+        <div class="uni-card">
+            <span class="uni-heading">{{ uni.name }}</span>
+            <ul>
+                <li class="uni-info">{{ uni.city }}, {{ uni.state }}</li>
+                <li class="uni-info">Campus Location: {{ uni.campus_location }}</li>
+                <li class="uni-info">Total Enrollment: {{ uni.total_enrollment }}</li>
+                <li clas="uni-info"><a href="{{ uni.website }}">Website</a></li>
+            </ul>
+            <a href="{{ url_for('college_info', id=uni.university_id) }}" class="uni-link">
+                <button type="button" class="more-info">
+                More Info
+                </button>
+            </a>
         </div>
         {% endfor %}
-        </table>
-    </body>
+    </div>
+</body>
 </html>

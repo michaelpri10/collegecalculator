@@ -1,0 +1,25 @@
+<p class="field-label">Which state do you live in?</p>
+{% include 'forms/states.html' %}
+
+<p class="field-label">What preference do you have for a school's state?</p>
+<select id="state-location" name="state_location" class="form-field js-basic-example-single">
+    <option value="0">Any state</option>
+    <option value="1">In-state</option>
+    <option value="2">Out-of-state</option>
+</select>
+
+<p class="field-label">What is your preferred type of location? (Choose multiple)</p>
+<select id="campus-location" name="campus_location" class="form-field js-basic-example-multiple" multiple="multiple">
+    <option value="City">City</option>
+    <option value="Town">Town</option>
+    <option value="Suburb">Suburb</option>
+    <option value="Rural">Rural</option>
+</select>
+
+<p class="field-label">What is your preferred college size? (Choose multiple)</p>
+<select id="enrollment" name="enrollment" class="form-field js-basic-example-multiple" multiple="multiple">
+    <option value="0">Small (0-5000)</option>
+    <option value="1">Medium (5000-15000)</option>
+    <option value="2">Large (15000-30000)</option>
+    <option value="3">Huge (30000+)</option>
+</select>

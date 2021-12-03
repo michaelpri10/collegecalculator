@@ -18,6 +18,9 @@ app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
 app.secret_key = "databaseproject"
 
+COLUMNS = ("university_id", "name", "city", "state", "website", "campus_location", "total_enrollment", "location_score", "score_score", "finance_score", "other_score")
+University = namedtuple('University', COLUMNS)
+
 #login window
 @app.route(path + "/", methods=['GET', 'POST'])
 def login():
@@ -126,11 +129,28 @@ def search():
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
         results = cur.fetchall()
-        University = namedtuple('University', columns)
+        # University = namedtuple('University', columns)
         universities = [University(*school) for school in results]
         return render_template('results.html', universities=universities)
 
     return render_template("search.html")
+
+@app.route(path + "/main", methods=["GET", "POST"])
+def find_colleges():
+    if request.method == "POST":
+        parameters = request.form
+        sql_query = generate_query(parameters)
+        cur = mysql.connection.cursor()
+        cur.execute(sql_query)
+        results = cur.fetchall()
+        universities = [University(*school) for school in results]
+        return render_template('results.html', universities=universities)
+    return render_template("user_form.html")
+
+@app.route(path + "/colleges/<int:id>", methods=["GET"])
+def college_info():
+    return
+
 
 """
 @app.route(path + "/results")
