@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request, session, url_for
 from flask_mysqldb import MySQL
 import yaml
 from collections import namedtuple
-from query_schools import generate_query
+from query_schools import generate_query, get_college
 
 app = Flask(__name__)
 mysql = MySQL(app)
@@ -18,8 +18,10 @@ app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
 app.secret_key = "databaseproject"
 
-COLUMNS = ("university_id", "name", "city", "state", "website", "campus_location", "total_enrollment", "location_score", "score_score", "finance_score", "other_score")
-University = namedtuple('University', COLUMNS)
+CARD_COLUMNS = ("university_id", "name", "city", "state", "website", "campus_location", "total_enrollment", "location_score", "score_score", "finance_score", "other_score")
+UNI_COLUMNS = ("university_id", "name", "city", "state", "website", "campus_location", "total_enrollment", "control", "religious", "accepts_ap_credit", "study_abroad", "offers_rotc", "has_football", "has_basketball", "ncaa_member", "retention_rate", "graduation_rate", "total_applicants", "total_admitted", "admission_rate", "male_applicants", "female_applicants", "male_admitted", "female_admitted", "sat_rw_25", "sat_rw_75", "sat_math_25", "sat_math_75", "act_25", "act_75", "in_state_price", "out_of_state_price", "average_price_after_aid", "percent_given_aid", "percent_american_indian_native_alaskan", "percent_asian", "percent_hawaiian_pacific_islander", "percent_black", "percent_white", "percent_hispanic", "percent_other", "percent_two_races")
+UniversityCard = namedtuple('UniversityCard', CARD_COLUMNS)
+University = namedtuple('University', UNI_COLUMNS)
 
 #login window
 @app.route(path + "/", methods=['GET', 'POST'])
@@ -121,6 +123,7 @@ def user_settings():
 
         return render_template("user_settings.html", username=session["username"])
 
+"""
 @app.route(path + "/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":
@@ -134,8 +137,9 @@ def search():
         return render_template('results.html', universities=universities)
 
     return render_template("search.html")
+"""
 
-@app.route(path + "/main", methods=["GET", "POST"])
+@app.route(path + "/search", methods=["GET", "POST"])
 def find_colleges():
     if request.method == "POST":
         parameters = request.form
@@ -143,13 +147,24 @@ def find_colleges():
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
         results = cur.fetchall()
-        universities = [University(*school) for school in results]
+        universities = [UniversityCard(*school) for school in results]
         return render_template('results.html', universities=universities)
     return render_template("user_form.html")
 
 @app.route(path + "/colleges/<int:id>", methods=["GET"])
-def college_info():
-    return
+def college_info(id):
+    info_query, majors_query = get_college(id)
+    cur = mysql.connection.cursor()
+    cur.execute(info_query)
+    data = cur.fetchall()
+    if len(data):
+        info = data[0]
+        cur.execute(majors_query)
+        majors = [major[0].strip().replace('"', '') for major in cur.fetchall()]
+        university = University(*info)
+        return render_template("college.html", uni=university, majors=majors)
+    else:
+        return redirect(url_for("find_colleges"))
 
 
 """

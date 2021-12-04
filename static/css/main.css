@@ -125,6 +125,59 @@
     cursor: pointer;
 }
 
+.college {
+    font-family: "Roboto", sans-serif;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 75%;
+    margin: 0 auto;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+.header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1%;
+}
+
+.heading {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+.location {
+}
+
+.site-link {
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    padding: 2.5%;
+}
+
+#programs {
+    width: 100%;
+}
+
+#major-list {
+    width: 100%;
+    columns: 3;
+}
+
+.section-heading {
+    font-size: 1.5em;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.features {
+    line-height: 150%;
+}
+
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
     background-color: #1B99D4;
 }
