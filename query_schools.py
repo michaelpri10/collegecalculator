@@ -5,6 +5,17 @@ ENROLLMENT_BOUNDS = {
     3: [30000, 10000000],
 }
 
+def get_college(uni_id):
+    select_str = "SELECT u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment, si.control, si.religious, si.accepts_ap_credit, si.study_abroad, si.offers_rotc, si.has_football, si.has_basketball, si.ncaa_member, si.retention_rate, si.graduation_rate, adm.total_applicants, adm.total_admitted, adm.admission_rate, adm.male_applicants, adm.female_applicants, adm.male_admitted, adm.female_admitted, adm.sat_rw_25, adm.sat_rw_75, adm.sat_math_25, adm.sat_math_75, adm.act_25, adm.act_75, fin.in_state_price, fin.out_of_state_price, fin.average_price_after_aid, fin.percent_given_aid, di.percent_american_indian_native_alaskan, di.percent_asian, di.percent_hawaiian_pacific_islander, di.percent_black, di.percent_white, di.percent_hispanic, di.percent_other, di.percent_two_races"
+    from_str = "FROM university as u, school_info as si, admission_stats as adm, financial_stats as fin, diversity_stats as di"
+    where_str = f"WHERE u.university_id = {uni_id} AND u.university_id = si.university_id AND u.university_id = adm.university_id AND u.university_id = fin.university_id AND u.university_id = di.university_id"
+
+    info_query = f"{select_str}\n{from_str}\n{where_str};"
+    majors_query = f"SELECT program_name FROM academic_programs WHERE {uni_id} = university_id;"
+
+    return info_query, majors_query
+
+
 def generate_query(params):
     state = params.get('state')
     state_location = int(params.get('state_location'))
@@ -83,7 +94,10 @@ def generate_query(params):
         academics_order.append(f"SUM(adm.sat_rw_25 <= {sat_reading})")
     if act > 1:
         academics_order.append(f"SUM(adm.act_25 <= {act})")
-    academics_str = "(maj.majors_count + (" + " + ".join(academics_order) + f") * {academics_mult}) as academics_score"
+    if majors:
+        academics_str = "(maj.majors_count + (" + " + ".join(academics_order) + f") * {academics_mult}) as academics_score"
+    else:
+        academics_str = "((" + " + ".join(academics_order) + f") * {academics_mult}) as academics_score"
 
     if academics_order:
         select_str = f"{select_str}, {academics_str}"
