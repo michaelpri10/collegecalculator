@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>College Calculator</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-</head>
-<body>
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/login.css')}}">
+{% endblock %}
+
+{% block content %}
 <div class="logo">
     <h1>College Calculator</h1>
 </div>
@@ -21,6 +26,7 @@
     </div>
     <div class="s">
 		<button type="submit" name="login-button">Log In</button>
+		<a href={{ url_for('create_account') }}>Create Account</a>
         <span></span>
         <span></span>
         <span></span>
@@ -28,5 +34,4 @@
     </div>
     </form>
 </div>
-</body>
-</html>
+{% endblock %}

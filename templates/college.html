@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>College Name</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-core.min.js"></script>
-    <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-pie.min.js"></script>
-</head>
-<body>
+{% extends "index.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-core.min.js"></script>
+<script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-pie.min.js"></script>
+{% endblock %}
+
+{% block content %}
     <div class="college">
         <div class="header">
             <div class="heading">{{ uni.name }}</div>
@@ -162,4 +167,4 @@
             </ul>
         </div>
     </div>
-</body>
+{% endblock %}
