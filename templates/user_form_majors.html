@@ -15,24 +15,47 @@
 <body>
 
 <form method="post" class="user-form">
-	<div class="form-step" id="interests-step" style="display:flex;">
+	<div class="form-step" id="interests-step">
         <div class="step-heading">Interests</div>
         {% include 'forms/interests.html' %} 
 		<button type="button" class="next-button" id="interests-button">
             Next Step ►
-        </button> 
+        </button> 	
     </div>
 
-	<div class="form-step" id="strengths-step" style="display:none;">
+	<div class="form-step" id="values-step">
 		<div class="step-heading">
-			<div id="majors-back" class="back-button">↩</div>
-			Strengths
+			<div id="values-back" class="back-button">↩</div>
+			Values
 		</div>
-		{% include 'forms/strengths.html' %} 
-        <button type="submit" class="next-button" id="strengths-button">
+		{% include 'forms/values.html' %} 
+		<button type="button" class="next-button" id="values-button">
+            Next Step ►
+        </button>
+	</div>
+
+	<div class="form-step" id="talents-step">
+		<div class="step-heading">
+			<div id="talents-back" class="back-button">↩</div>
+			Talents
+		</div>
+		{% include 'forms/talents.html' %} 
+		<button type="button" class="next-button" id="talents-button">
+            Next Step ►
+        </button>
+	</div>
+
+	<div class="form-step" id="qualities-step">
+		<div class="step-heading">
+			<div id="qualities-back" class="back-button">↩</div>
+			Qualities
+		</div>
+		{% include 'forms/qualities.html' %}  
+        <button type="submit" class="next-button" id="qualities-button">
             Submit
         </button>
 	</div>
+
 </form>
 
 <script src="{{ url_for('static', filename='js/main_majors.js') }}"></script>
