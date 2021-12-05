@@ -173,3 +173,18 @@ def generate_query(params):
 
     columns = "university_id, name, city, state, website, campus_location, total_enrollment"
     return (f"{select_str}\n{from_str}\n{where_str}\n{group_str}\n{order_str}\n{limit_str};", order)
+
+
+def find_major(majors_list):
+#second advanced function
+#NOTE: this does not seem too advanced, so maybe we can parse each major / type to describe what it is
+#calculate quiz output
+	major_dict = {}
+	for l in majors_list:
+		for major in l:
+			major_dict[major] = major_dict.get(major, 0) + 1
+	major_type = max(major_dict, key = major_dict.get)
+
+#query for majors based on type
+	query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
+	return major_type, query
