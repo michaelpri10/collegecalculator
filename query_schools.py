@@ -7,7 +7,7 @@ ENROLLMENT_BOUNDS = {
 
 def get_college_basic(uni_id_list):
     where_str = ''
-    order_by_str = ''
+    order_by_str = 'ORDER BY (CASE'
     counter = 1
     for id in uni_id_list:
         id_str = f'u.university_id = {id}'
@@ -15,11 +15,14 @@ def get_college_basic(uni_id_list):
             where_str = f'{where_str} or {id_str}'
         else:
             where_str = f'{id_str}'
-        #order_by_str = f'{order_by_str} WHEN {id} THEN {counter}'
+
+        order_by_str = f'{order_by_str} WHEN {id_str} THEN {counter}'
         counter += 1
+    order_by_str = f'{order_by_str} END) ASC'
 
     columns = "u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment"
-    query  = f'SELECT {columns} FROM university u WHERE {where_str}' #ORDER_BY CASE u.university_id'
+    query  = f'SELECT {columns} FROM university u WHERE {where_str} {order_by_str};' #ORDER_BY CASE u.university_id'
+    print(query)
     return query
 
 def get_college(uni_id):

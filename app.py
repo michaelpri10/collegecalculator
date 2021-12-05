@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from flask_bootstrap import Bootstrap
 from flask_nav import Nav
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+
 from flask_nav.elements import *
 
 import yaml
@@ -54,9 +55,6 @@ UNI_COLUMNS = ("university_id", "name", "city", "state", "website", "campus_loca
 UniversityCard = namedtuple('UniversityCard', CARD_COLUMNS)
 University = namedtuple('University', UNI_COLUMNS)
 
-
-
-
 @app.route(path + '/')
 def index():
     #if 'username' in session:
@@ -76,9 +74,11 @@ def login():
 
                 # connect to mysql and run queries
                 cur = mysql.connection.cursor()
-
-                #check if a username / password exists. if not, make an account
-                cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (username, password))
+                
+                #check if a username / password exists. if not, make an account 
+                cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
+                    {'username': username, 'password': password}
+                )
                 login_exists = cur.fetchall()
 
                 mysql.connection.commit() #save changes in the database
@@ -90,6 +90,9 @@ def login():
                         return redirect(url_for('find_colleges'))
                 else:
                         return  'Oops'
+
+        if session['logged_in']:
+                return redirect(url_for('find_colleges'))
 
         return render_template('login.html')
 
@@ -105,7 +108,7 @@ def create_account():
                 cur = mysql.connection.cursor()
 
                 #check if username already exists
-                cur.execute("SELECT * from login_information where username = '%s'" % new_username)
+                cur.execute("SELECT * from login_information where username = %(new_username)s", {'new_username': new_username})
                 login_exists = cur.fetchall()
 
                 if len(login_exists) != 0:
@@ -113,11 +116,16 @@ def create_account():
                         return redirect(url_for('/create_account'))
                 else:
                         #insert into the database
-                        cur.execute("INSERT INTO login_information(username, password) VALUES(%s, %s)", (new_username, new_password))
-                        mysql.connection.commit()
+                        cur.execute("INSERT INTO login_information(username, password) VALUES(%(new_username)s, %(new_password)s)",
+                            {'new_username': new_username, 'new_password': new_password}
+                        )
+                        mysql.connection.commit()       
                         return redirect(url_for('login'))
 
                 cur.close()
+
+        if session['logged_in']:
+                return redirect(url_for('find_colleges'))
 
         return render_template('create_account.html')
 
@@ -135,13 +143,14 @@ def user_settings():
                         new_password = form_details['newpassword']
 
                         #check if information is correct
-                        cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (session["username"], old_password))
+                        cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s", {'username': session["username"], 'password': old_password}
+                        )
                         login_exists = cur.fetchall()
 
                         if len(login_exists) == 0:
                                 return 'Incorrect account information. Account settings not saved.'
                         else:
-                                cur.execute("UPDATE login_information SET password='%s' WHERE username='%s'" % (new_password, session["username"]))
+                                cur.execute("UPDATE login_information SET password=%(new_password)s WHERE username=%(username)s", {'new_password': new_password, 'username': session["username"]})
                                 mysql.connection.commit()
                                 cur.close()
                                 return 'Password updated.'
@@ -152,19 +161,25 @@ def user_settings():
                         password = form_details['delete_pass']
 
                         #check if information is correct
-                        cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (username, password))
-                        login_exists = cur.fetchall()
+                        cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
+                            {'username': username, 'password': password}
+                        )
+                        login_exists = cur.fetchall()   
 
                         if len(login_exists) == 0:
                                 return 'Incorrect account information. Account settings not saved.'
                         else:
-                                cur.execute("DELETE FROM login_information where username='%s' and password='%s'" % (username, password))
+                                cur.execute("DELETE FROM login_information where username=%(username)s and password=%(password)s", {'username': username, 'password': password})
                                 mysql.connection.commit()
                                 cur.close()
                         return 'Account Deleted.'
+                elif form_details['submit_button'] == 'logout':
+                        print('logging out')
+                        session['logged_in'] = False
+                        del session['username']
+                        return redirect(url_for('login'))
 
         return render_template("user_settings.html", username=session["username"])
-
 
 @app.route(path + "/search", methods=["GET", "POST"])
 def find_colleges():
@@ -181,8 +196,7 @@ def find_colleges():
         return redirect(url_for("results", ids=uni_ids))
     return render_template("user_form.html")
 
-
-@app.route(path + "/results<int_list:ids>", methods=["GET", "POST"])
+@app.route(path + "/results/<int_list:ids>", methods=["GET", "POST"])
 def results(ids):
     sql_query = get_college_basic(ids)
     cur = mysql.connection.cursor()
@@ -196,7 +210,7 @@ def results(ids):
         university = request.form
         print(university['save'])
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO saved_universities(user, university_id) VALUES(%s, %s);", (session['username'], university['save']))
+        cur.execute("INSERT INTO saved_universities(user, university_id) VALUES(%(username)s, %(save)s);", {'username': session['username'], 'save': university['save']})
 
         print('WORKED')
         mysql.connection.commit()
@@ -258,7 +272,6 @@ def find_majors():
 
 
 nav.init_app(app)
-
 
 if __name__ == "__main__":
         app.run(host="0.0.0.0", debug=True, port =5008)
