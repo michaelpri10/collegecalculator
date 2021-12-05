@@ -1,4 +1,4 @@
-rom flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, session, url_for
 from flask_mysqldb import MySQL
 from flask_bootstrap import Bootstrap
 from flask_nav import Nav
