@@ -36,7 +36,9 @@ def login():
                 cur = mysql.connection.cursor()
                 
                 #check if a username / password exists. if not, make an account 
-                cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (username, password))
+                cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
+                    {'username': username, 'password': password}
+                )
                 login_exists = cur.fetchall()
 
                 mysql.connection.commit() #save changes in the database
@@ -45,7 +47,7 @@ def login():
                 if len(login_exists) != 0:
                         session["username"] = username
                         session["logged_in"] = True
-                        return redirect(url_for('search'))
+                        return redirect(url_for('find_colleges'))
                 else:
                         return 'Incorrect username or password'
         
@@ -63,7 +65,7 @@ def create_account():
                 cur = mysql.connection.cursor()
                 
                 #check if username already exists
-                cur.execute("SELECT * from login_information where username = '%s'" % new_username)
+                cur.execute("SELECT * from login_information where username = %(new_username)s", {'new_username': new_username})
                 login_exists = cur.fetchall()
 
                 if len(login_exists) != 0:
@@ -71,12 +73,16 @@ def create_account():
                         return redirect(url_for('/create_account'))
                 else:
                         #insert into the database
-                        cur.execute("INSERT INTO login_information(username, password) VALUES(%s, %s)", (new_username, new_password))
+                        cur.execute("INSERT INTO login_information(username, password) VALUES(%(new_username)s, %(new_password)s)",
+                            {'new_username': new_username, 'new_password': new_password}
+                        )
                         mysql.connection.commit()       
                         return redirect(url_for('login'))
 
                 cur.close()
 
+        if session['logged_in']:
+                return redirect(url_for('user_settings'))
         return render_template('create_account.html')
 
 # user settings window
@@ -93,13 +99,14 @@ def user_settings():
                         new_password = form_details['newpassword']
                         
                         #check if information is correct
-                        cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (session["username"], old_password))
+                        cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s", {'username': session["username"], 'password': old_password}
+                        )
                         login_exists = cur.fetchall()
 
                         if len(login_exists) == 0:
                                 return 'Incorrect account information. Account settings not saved.'
                         else:
-                                cur.execute("UPDATE login_information SET password='%s' WHERE username='%s'" % (new_password, session["username"]))
+                                cur.execute("UPDATE login_information SET password=%(new_password)s WHERE username=%(username)s", {'new_password': new_password, 'username': session["username"]})
                                 mysql.connection.commit()
                                 cur.close()
                                 return 'Password updated.'
@@ -110,33 +117,25 @@ def user_settings():
                         password = form_details['delete_pass']
                         
                         #check if information is correct
-                        cur.execute("SELECT * from login_information where username = '%s' and password = '%s'" % (username, password))
+                        cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
+                            {'username': username, 'password': password}
+                        )
                         login_exists = cur.fetchall()   
 
                         if len(login_exists) == 0:
                                 return 'Incorrect account information. Account settings not saved.'
                         else:
-                                cur.execute("DELETE FROM login_information where username='%s' and password='%s'" % (username, password))
+                                cur.execute("DELETE FROM login_information where username=%(username)s and password=%(password)s", {'username': username, 'password': password})
                                 mysql.connection.commit()
                                 cur.close()
                         return 'Account Deleted.'
+                elif form_details['submit_button'] == 'logout':
+                        print('logging out')
+                        session['logged_in'] = False
+                        del session['username']
+                        return redirect(url_for('login'))
         return render_template("user_settings.html", username=session["username"])
 
-"""
-@app.route(path + "/search", methods=["GET", "POST"])
-def search():
-    if request.method == "POST":
-        parameters = request.form
-        columns, sql_query = generate_query(parameters)
-        cur = mysql.connection.cursor()
-        cur.execute(sql_query)
-        results = cur.fetchall()
-        # University = namedtuple('University', columns)
-        universities = [University(*school) for school in results]
-        return render_template('results.html', universities=universities)
-
-    return render_template("search.html")
-"""
 
 @app.route(path + "/search", methods=["GET", "POST"])
 def find_colleges():
@@ -173,17 +172,6 @@ def find_majors():
 		return render_template('results_majors.html')
 	return render_template("user_form_majors.html")
 
-
-"""
-
-@app.route(path + "/results")
-def results():
-    columns = session['columns']
-    results = session['results']
-    University = namedtuple('University', columns)
-    universities = [University(*school) for school in results]
-    return render_template('results.html', universities=universities)
-"""
 
 if __name__ == "__main__":
         app.run(host="0.0.0.0", debug=True)
