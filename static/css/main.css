@@ -24,7 +24,7 @@
     display: flex;
     flex-direction: column;
     padding: 1%;
-    background-color: #45B7D9;
+    background-color: #05445E;
 }
 
 .uni-heading {
@@ -125,6 +125,10 @@
     cursor: pointer;
 }
 
+.simple-button {
+    background-color: #375a7f;
+}
+
 .college {
     font-family: "Roboto", sans-serif;
     display: flex;
@@ -179,7 +183,7 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: #1B99D4;
+    background-color: #05445E;
 }
 
 .select2-container {
@@ -189,4 +193,5 @@
 .select2-results__option {
     font-family: "Roboto", sans-serif;
     font-weight: 300;
+    color: Black;
 }
