@@ -8,7 +8,7 @@ from flask_nav.elements import *
 
 import yaml
 from collections import namedtuple
-from query_schools import generate_query, get_college, get_college_basic, find_major, get_major_type_info
+from query_schools import generate_query, get_college, get_college_basic, find_major, get_major_type_info, get_major_info
 from werkzeug.routing import BaseConverter
 import requests
 import re
@@ -268,9 +268,10 @@ def find_majors():
 			cur.execute(query)
 			data = cur.fetchall()
 			type_info = get_major_type_info(major_type)
+			type_stats = get_major_info(major_type)
 		else:
 			return 'Please enter preferences'
-		return render_template('results_majors.html', major_type = major_type, major_type_info = type_info, majors = data)
+		return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= type_stats, majors = data)
 	return render_template("user_form_majors.html")
 
 

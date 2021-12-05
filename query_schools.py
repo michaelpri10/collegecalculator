@@ -207,3 +207,39 @@ def get_major_type_info(major):
 	description = str(soup.find_all('div', class_="text")[num])[len_front:-97]
 
 	return sub_title, description
+
+def get_major_info(major_name):
+    major_path = "https://www.mymajors.com/college-majors/"
+    name = re.sub("[^a-zA-z]+", " ", major_name)
+    major = "-".join(name.lower().split())
+    url = major_path + major
+
+    page = requests.get(url).text
+
+    default_text = "A general program that focuses on law and legal issues from the perspective of the social sciences and humanities."
+
+    soup = BeautifulSoup(page, "html.parser")
+    desc = soup.find("p", {"class": "lead"}).get_text()
+    desc_text = desc.split('\n')[1].strip()
+    if desc_text == default_text:
+        return "Not found"
+
+    class_list = soup.find("ul", {"class": "cols3"}).get_text().strip().split('\n')
+    classes = [cl.strip() for cl in class_list if cl.strip()]
+
+    career_url = "https://www.mymajors.com/careers/" + major + "-major"
+    careers_page = requests.get(career_url).text
+
+    soup = BeautifulSoup(careers_page, "html.parser")
+    job_list = soup.find("ul", {"class": "cols2"}).get_text().strip().split('\n')
+    jobs = [job.strip() for job in job_list if job.strip()]
+
+    salary_data = soup.find_all("td")
+    salaries = {}
+    for i in range(0, len(salary_data), 2):
+        label = salary_data[i].get_text().strip()
+        salary = salary_data[i+1].get_text().strip()
+        salaries[label] = salary
+
+    return desc_text, classes, jobs, salaries
+
