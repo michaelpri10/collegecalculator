@@ -5,6 +5,23 @@ ENROLLMENT_BOUNDS = {
     3: [30000, 10000000],
 }
 
+def get_college_basic(uni_id_list):
+    where_str = ''
+    order_by_str = ''
+    counter = 1
+    for id in uni_id_list:
+        id_str = f'u.university_id = {id}'
+        if len(where_str) > 0:
+            where_str = f'{where_str} or {id_str}'
+        else:
+            where_str = f'{id_str}'
+        #order_by_str = f'{order_by_str} WHEN {id} THEN {counter}'
+        counter += 1
+
+    columns = "u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment"
+    query  = f'SELECT {columns} FROM university u WHERE {where_str}' #ORDER_BY CASE u.university_id'
+    return query
+
 def get_college(uni_id):
     select_str = "SELECT u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment, si.control, si.religious, si.accepts_ap_credit, si.study_abroad, si.offers_rotc, si.has_football, si.has_basketball, si.ncaa_member, si.retention_rate, si.graduation_rate, adm.total_applicants, adm.total_admitted, adm.admission_rate, adm.male_applicants, adm.female_applicants, adm.male_admitted, adm.female_admitted, adm.sat_rw_25, adm.sat_rw_75, adm.sat_math_25, adm.sat_math_75, adm.act_25, adm.act_75, fin.in_state_price, fin.out_of_state_price, fin.average_price_after_aid, fin.percent_given_aid, di.percent_american_indian_native_alaskan, di.percent_asian, di.percent_hawaiian_pacific_islander, di.percent_black, di.percent_white, di.percent_hispanic, di.percent_other, di.percent_two_races"
     from_str = "FROM university as u, school_info as si, admission_stats as adm, financial_stats as fin, diversity_stats as di"
@@ -155,4 +172,4 @@ def generate_query(params):
     limit_str = "LIMIT 21"
 
     columns = "university_id, name, city, state, website, campus_location, total_enrollment"
-    return f"{select_str}\n{from_str}\n{where_str}\n{group_str}\n{order_str}\n{limit_str};"
+    return (f"{select_str}\n{from_str}\n{where_str}\n{group_str}\n{order_str}\n{limit_str};", order)
