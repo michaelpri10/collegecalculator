@@ -61,7 +61,7 @@
     align-self: center;
 }
 
-#majors-step, #finance-step, #other-step, #priority-step {
+#majors-step, #finance-step, #other-step, #priority-step, #values-step, #talents-step, #qualities-step  {
     display: none;
 }
 
