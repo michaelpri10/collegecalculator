@@ -254,12 +254,24 @@ def college_info(id):
 def find_majors():
 	if request.method == "POST":
 		parameters = request.form
-		return render_template('results_majors.html')
+
+		# second advanced function
+		# note from gigi: not the most advanced function, but we can parse websites about each type of major then output those details on the results_majors.html page
+		majors_list = list(parameters.listvalues())
+		if majors_list:
+			major_dict = {}	
+			for l in majors_list:
+				for major in l:
+					major_dict[major] = major_dict.get(major, 0)+1
+			major = max(major_dict, key=major_dict.get)
+		else:
+			return 'Please enter preferences'
+
+		return render_template('results_majors.html', major_type = major)
 	return render_template("user_form_majors.html")
 
 
 nav.init_app(app)
 
 if __name__ == "__main__":
-        app.run(host="0.0.0.0", debug=True, port=5000)
-
+        app.run(host="0.0.0.0", debug=True)
