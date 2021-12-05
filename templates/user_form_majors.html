@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Majors</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body>
+
+<form method="post" class="user-form">
+	<div class="form-step" id="interests-step" style="display:flex;">
+        <div class="step-heading">Interests</div>
+        {% include 'forms/interests.html' %} 
+		<button type="button" class="next-button" id="interests-button">
+            Next Step ►
+        </button> 
+    </div>
+
+	<div class="form-step" id="strengths-step" style="display:none;">
+		<div class="step-heading">
+			<div id="majors-back" class="back-button">↩</div>
+			Strengths
+		</div>
+		{% include 'forms/strengths.html' %} 
+        <button type="submit" class="next-button" id="strengths-button">
+            Submit
+        </button>
+	</div>
+</form>
+
+<script src="{{ url_for('static', filename='js/main_majors.js') }}"></script>
+</body>

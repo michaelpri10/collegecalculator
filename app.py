@@ -120,7 +120,6 @@ def user_settings():
                                 mysql.connection.commit()
                                 cur.close()
                         return 'Account Deleted.'
-
         return render_template("user_settings.html", username=session["username"])
 
 """
@@ -153,21 +152,30 @@ def find_colleges():
 
 @app.route(path + "/colleges/<int:id>", methods=["GET"])
 def college_info(id):
-    info_query, majors_query = get_college(id)
-    cur = mysql.connection.cursor()
-    cur.execute(info_query)
-    data = cur.fetchall()
-    if len(data):
-        info = data[0]
-        cur.execute(majors_query)
-        majors = [major[0].strip().replace('"', '') for major in cur.fetchall()]
-        university = University(*info)
-        return render_template("college.html", uni=university, majors=majors)
-    else:
-        return redirect(url_for("find_colleges"))
+	info_query, majors_query = get_college(id)
+	cur = mysql.connection.cursor()
+	cur.execute(info_query)
+	data = cur.fetchall()
+	if len(data):
+		info = data[0]
+		cur.execute(majors_query)
+		majors = [major[0].strip().replace('"', '') for major in cur.fetchall()]
+		university = University(*info)
+		return render_template("college.html", uni=university, majors=majors)
+	else:
+		return redirect(url_for("find_colleges"))
+
+#find majors
+@app.route(path+ "/search_majors", methods=["GET","POST"])
+def find_majors():
+	if request.method == "POST":
+		parameters = request.form
+		return render_template('results_majors.html')
+	return render_template("user_form_majors.html")
 
 
 """
+
 @app.route(path + "/results")
 def results():
     columns = session['columns']
