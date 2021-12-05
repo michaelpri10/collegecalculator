@@ -91,6 +91,9 @@ def login():
                 else:
                         return  'Oops'
 
+        if session['logged_in']:
+                return redirect(url_for('find_colleges'))
+
         return render_template('login.html')
 
 # create account window
@@ -122,7 +125,8 @@ def create_account():
                 cur.close()
 
         if session['logged_in']:
-                return redirect(url_for('user_settings'))
+                return redirect(url_for('find_colleges'))
+
         return render_template('create_account.html')
 
 # user settings window
@@ -206,7 +210,7 @@ def results(ids):
         university = request.form
         print(university['save'])
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO saved_universities(user, university_id) VALUES(%s, %s);", (session['username'], university['save']))
+        cur.execute("INSERT INTO saved_universities(user, university_id) VALUES(%(username)s, %(save)s);", {'username': session['username'], 'save': university['save']})
 
         print('WORKED')
         mysql.connection.commit()
