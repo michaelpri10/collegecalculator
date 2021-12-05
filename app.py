@@ -8,7 +8,7 @@ from flask_nav.elements import *
 
 import yaml
 from collections import namedtuple
-from query_schools import generate_query, get_college, get_college_basic
+from query_schools import generate_query, get_college, get_college_basic, find_major
 from werkzeug.routing import BaseConverter
 
 
