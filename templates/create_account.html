@@ -1,18 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>College Calculator</title>
-	<link rel="stylesheet" href="css/login.css">
-</head>
-<body>
-<h1>College Calculator</h1>
-<div class="create-account">
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Create Account
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='css/login.css')}}">
+{% endblock %}
+
+
+{% block content %}
+<div class="logo">
+    <h1>College Calculator</h1>
+</div>
+
+<div class="login-box">
   <h1>Create Account</h1>
   	<form method="POST">
-		<input type="text" name="u" placeholder="Username" required="required" />
-		<input type="password" name="p" placeholder="Password" required="required" />
-		<button type="submit" name="login-button">Create</button>
+    <div class="user-box">
+		<input type="text" name="u" required="required" />
+        <label>Username</label>
+    </div>
+    <div class="user-box">
+		<input type="password" name="p" required="required" />
+        <label>Password</label>
+    </div>
+    <div class="s">
+		<button type="submit" name="login-button">Create Account</button>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
     </form>
 </div>
-</body>
-</html>
+{% endblock %}
