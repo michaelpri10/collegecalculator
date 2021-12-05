@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Search Colleges</title>
+{% extends "index.html" %}
+
+{% block styles %}
+{{super()}}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="result-container">
         {% for uni in universities %}
         <div class="uni-card">
             <span class="uni-heading">{{ uni.name }}</span>
+            <br>
             <ul>
                 <li class="uni-info">{{ uni.city }}, {{ uni.state }}</li>
                 <li class="uni-info">Campus Location: {{ uni.campus_location }}</li>
@@ -20,8 +22,14 @@
                 More Info
                 </button>
             </a>
+            <br>
+            <br>
+
+            <form method="post">
+                <button type="button submit" name="save" class="more-info uni-link" value="{{ uni.university_id }}">Save</button>
+            </form>
         </div>
         {% endfor %}
     </div>
-</body>
-</html>
+
+{% endblock %}
