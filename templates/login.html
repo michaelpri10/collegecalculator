@@ -2,18 +2,32 @@
 <html>
 <head>
 	<title>College Calculator</title>
-	<link rel="stylesheet" href="css/login.css">
+	<link rel="stylesheet" href="login.css">
+	<link rel="stylesheet" href="main.css">
 </head>
 <body>
-<h1>College Calculator</h1>
-<div class="login" id="login">
+<div class="logo">
+    <h1>College Calculator</h1>
+</div>
+<div class="login-box">
   <h1>Login</h1>
   	<form method="POST">
-		<input type="text" name="u" placeholder="Username" required="required" />
-		<input type="password" name="p" placeholder="Password" required="required" />
+    <div class="user-box">
+		<input type="text" name="u" required="required" />
+        <label>Username</label>
+    </div>
+    <div class="user-box">
+		<input type="password" name="p" required="required" />
+        <label>Password</label>
+    </div>
+    <div class="s">
 		<button type="submit" name="login-button">Log In</button>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
     </form>
-	<a href="create_account">Create Account</a>
 </div>
 </body>
 </html>
