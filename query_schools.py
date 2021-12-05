@@ -191,3 +191,19 @@ def find_major(majors_list):
 #query for majors based on type
 	query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
 	return major_type, query
+
+def get_major_type_info(major):
+	major = "artistic"
+	URL = "https://acd.iupui.edu/explore/choose-your-major/connect-majors-to-careers/interests/" + major+ "/index.html"
+	html_text = requests.get(URL).text
+	soup = BeautifulSoup(html_text, 'html.parser')
+
+	sub_title = str(soup.find('h3'))[4:-5]
+	len_front = 61 + len(major)
+	if major.lower() == "realistic":
+		num = 2
+	else:
+		num =3
+	description = str(soup.find_all('div', class_="text")[num])[len_front:-97]
+
+	return sub_title, description
