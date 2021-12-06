@@ -195,3 +195,9 @@
     font-weight: 300;
     color: Black;
 }
+
+.large {
+    font-size: 300%;
+    padding: 30px;
+    margin: 30px;
+}
