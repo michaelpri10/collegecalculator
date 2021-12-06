@@ -268,10 +268,19 @@ def find_majors():
 			cur.execute(query)
 			data = cur.fetchall()
 			type_info = get_major_type_info(major_type)
-			type_stats = get_major_info(major_type)
+			possible_majors = {}
+
+			for major in data:
+				major = major[0]
+				possible_majors[major] = possible_majors.get(major, None)
+				print(major)
+				unpacked_args = get_major_info(major)
+				if unpacked_args != "Not found":
+					desc_text, classes, jobs, salaries = unpacked_args
+					possible_majors[major] = (desc_text, classes, jobs, salaries)
 		else:
 			return 'Please enter preferences'
-		return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= type_stats, majors = data)
+		return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= possible_majors, majors = data)
 	return render_template("user_form_majors.html")
 
 
