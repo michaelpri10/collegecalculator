@@ -8,6 +8,7 @@ from flask_nav.elements import *
 
 import yaml
 from collections import namedtuple
+import concurrent.futures
 from query_schools import generate_query, get_college, get_college_basic, find_major, get_major_type_info, get_major_info
 from werkzeug.routing import BaseConverter
 import requests
@@ -65,11 +66,14 @@ def index():
     if not session.get('logged_in', False):
         return redirect(url_for('login'))
 
-    return redirect(url_for('find_colleges'))
+    return redirect(url_for('home'))
 
 
 @app.route(path + '/home', methods=['GET', 'POST'])
 def home():
+    if not session.get('logged_in', False):
+        return redirect(url_for('login'))
+
     # get some of your saved universities
     columns = 'u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment'
     cur = mysql.connection.cursor()
@@ -90,7 +94,7 @@ def home():
     major_type = ""
     possible_majors = []
     if results:
-        major_type = results[0]
+        major_type = results[0][0]
         query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
 
         cur.execute(query)
@@ -327,16 +331,18 @@ def find_majors():
             type_info = get_major_type_info(major_type)
             possible_majors = {}
 
-            for major in data:
-                major = major[0]
-                possible_majors[major] = possible_majors.get(major, None)
-                unpacked_args = get_major_info(major)
-                if unpacked_args != "Not found":
-                    desc_text, classes, jobs, salaries = unpacked_args
-                    possible_majors[major] = (desc_text, classes, jobs, salaries)
+            with concurrent.futures.ThreadPoolExecutor() as e:
+                future = [
+                    e.submit(request_major_info, major, possible_majors)
+                    for major in data
+                ]
+                for res in concurrent.futures.as_completed(future):
+                    res.result()
+                    
         else:
             return 'Please enter preferences'
-        return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= possible_majors, majors = data)
+        return render_template('results_majors.html', major_type=major_type, major_info=type_info, type_stats=possible_majors, majors=data)
+
     return render_template("user_form_majors.html")
 
 def request_major_info(major, possible_majors):
