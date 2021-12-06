@@ -60,11 +60,10 @@ University = namedtuple('University', UNI_COLUMNS)
 
 @app.route(path + '/')
 def index():
-    #if 'username' in session:
-    return redirect(url_for('login'))
+    if not session.get('logged_in', False):
+        return redirect(url_for('login'))
 
     return redirect(url_for('find_colleges'))
-    return render_template('index.html')
 
 #login window
 @app.route(path + "/login", methods=['GET', 'POST'])
@@ -88,13 +87,13 @@ def login():
                 cur.close()
 
                 if len(login_exists) != 0:
-                        session["username"] = username
-                        session["logged_in"] = True
+                        session['username'] = username
+                        session['logged_in'] = True
                         return redirect(url_for('find_colleges'))
                 else:
                         return  'Oops'
 
-        if session['logged_in']:
+        if session.get('logged_in', False):
                 return redirect(url_for('find_colleges'))
 
         return render_template('login.html')
@@ -127,7 +126,7 @@ def create_account():
 
                 cur.close()
 
-        if session['logged_in']:
+        if session.get('logged_in', False):
                 return redirect(url_for('find_colleges'))
 
         return render_template('create_account.html')
@@ -177,10 +176,13 @@ def user_settings():
                                 cur.close()
                         return 'Account Deleted.'
                 elif form_details['submit_button'] == 'logout':
-                        print('logging out')
                         session['logged_in'] = False
-                        del session['username']
+                        if 'username' in session:
+                            del session['username']
                         return redirect(url_for('login'))
+
+        if not session.get('logged_in', False):
+                return redirect(url_for('login'))
 
         return render_template("user_settings.html", username=session["username"])
 
@@ -205,11 +207,11 @@ def results(ids):
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
     results = cur.fetchall()
-    for i in results:
-        print(i)
     universities = [UniversityCard(*school) for school in results]
 
-    if request.method == "POST":
+    if request.method == 'POST':
+        if not session.get('logged_in', False):
+            return redirect(url_for('login'))
         university = request.form
         print(university['save'])
         cur = mysql.connection.cursor()
@@ -222,6 +224,9 @@ def results(ids):
 
 @app.route(path + "/saved_universities", methods=["GET", "POST"])
 def saved_universities():
+    if not session.get('logged_in', False):
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         university = request.form
         print(university['delete'])
@@ -285,7 +290,6 @@ def find_majors():
 def request_major_info(major, possible_majors):
         major = major[0]
         possible_majors[major] = possible_majors.get(major, None)
-        print(major)
         unpacked_args = get_major_info(major)
         if unpacked_args != "Not found":
                 desc_text, classes, jobs, salaries = unpacked_args
