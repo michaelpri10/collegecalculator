@@ -218,14 +218,16 @@ def get_major_info(major_name):
     page = requests.get(url).text
 
     default_text = "A general program that focuses on law and legal issues from the perspective of the social sciences and humanities."
-
     soup = BeautifulSoup(page, "html.parser")
     desc = soup.find("p", {"class": "lead"}).get_text()
     desc_text = desc.split('\n')[1].strip()
     if desc_text == default_text:
         return "Not found"
+    class_list = soup.find("ul", {"class": "cols3"})
+    if type(class_list) == None:
+        return "Not found"
 
-    class_list = soup.find("ul", {"class": "cols3"}).get_text().strip().split('\n')
+    class_list = class_list.get_text().strip().split('\n')
     classes = [cl.strip() for cl in class_list if cl.strip()]
 
     career_url = "https://www.mymajors.com/careers/" + major + "-major"
