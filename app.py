@@ -8,12 +8,12 @@ from flask_nav.elements import *
 
 import yaml
 from collections import namedtuple
-import concurrent.futures
 from query_schools import generate_query, get_college, get_college_basic, find_major, get_major_type_info, get_major_info
 from werkzeug.routing import BaseConverter
 import requests
 import re
 from bs4 import BeautifulSoup
+
 
 class IntListConverter(BaseConverter):
     regex = r'\d+(?:,\d+)*,?'
@@ -26,10 +26,11 @@ class IntListConverter(BaseConverter):
 
 
 topbar = Navbar(
-                View('Home', 'find_colleges'),
+                View('Home', 'home'),
                 View('MyUniversities', 'saved_universities'),
-                View('Search', 'find_colleges'),
+                View('Search Colleges', 'find_colleges'),
                 View('Account', 'user_settings'),
+                View('Search Majors', 'find_majors')
                 )
 # registers the "top" menubar
 nav = Nav()
@@ -58,6 +59,7 @@ UNI_COLUMNS = ("university_id", "name", "city", "state", "website", "campus_loca
 UniversityCard = namedtuple('UniversityCard', CARD_COLUMNS)
 University = namedtuple('University', UNI_COLUMNS)
 
+
 @app.route(path + '/')
 def index():
     #if 'username' in session:
@@ -65,6 +67,42 @@ def index():
 
     return redirect(url_for('find_colleges'))
     return render_template('index.html')
+
+
+@app.route(path + '/home', methods=['GET', 'POST'])
+def home():
+    # get some of your saved universities
+    columns = 'u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment'
+    cur = mysql.connection.cursor()
+    sql_query = "SELECT u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment FROM saved_universities s, university u WHERE s.user = %s and s.university_id = u.university_id;"
+    cur.execute(sql_query, [session['username']])
+    mysql.connection.commit()
+    results = cur.fetchall()
+    cur.close()
+    universities = [UniversityCard(*school) for school in results]
+
+    #get your personality type for majors
+
+    cur = mysql.connection.cursor()
+    sql_query = "SELECT major_type FROM user_major_type WHERE user = %s"
+    cur.execute(sql_query, [session['username']])
+    mysql.connection.commit()
+    results = cur.fetchall()
+
+    major_type = results[0][0]
+    query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
+
+    cur.execute(query)
+    data = cur.fetchall()
+    type_info = get_major_type_info(major_type)
+    possible_majors = {}
+
+    for major in data:
+        major = major[0]
+        possible_majors[major] = possible_majors.get(major, None)
+
+
+    return render_template("home.html", universities=universities, major_type=major_type, possible_majors=possible_majors)
 
 #login window
 @app.route(path + "/login", methods=['GET', 'POST'])
@@ -77,8 +115,8 @@ def login():
 
                 # connect to mysql and run queries
                 cur = mysql.connection.cursor()
-                
-                #check if a username / password exists. if not, make an account 
+
+                #check if a username / password exists. if not, make an account
                 cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
                     {'username': username, 'password': password}
                 )
@@ -90,7 +128,7 @@ def login():
                 if len(login_exists) != 0:
                         session["username"] = username
                         session["logged_in"] = True
-                        return redirect(url_for('find_colleges'))
+                        return redirect(url_for('home'))
                 else:
                         return  'Oops'
 
@@ -122,7 +160,7 @@ def create_account():
                         cur.execute("INSERT INTO login_information(username, password) VALUES(%(new_username)s, %(new_password)s)",
                             {'new_username': new_username, 'new_password': new_password}
                         )
-                        mysql.connection.commit()       
+                        mysql.connection.commit()
                         return redirect(url_for('login'))
 
                 cur.close()
@@ -167,7 +205,7 @@ def user_settings():
                         cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
                             {'username': username, 'password': password}
                         )
-                        login_exists = cur.fetchall()   
+                        login_exists = cur.fetchall()
 
                         if len(login_exists) == 0:
                                 return 'Incorrect account information. Account settings not saved.'
@@ -256,43 +294,48 @@ def college_info(id):
     else:
         return redirect(url_for("find_colleges"))
 
+
 #find majors
 @app.route(path+ "/search_majors", methods=["GET","POST"])
 def find_majors():
-        if request.method == "POST":
-                parameters = request.form
+    if request.method == "POST":
+        parameters = request.form
 
-                majors_list = list(parameters.listvalues())
-                if majors_list:
-                        major_type, query = find_major(majors_list)
-                        cur = mysql.connection.cursor()
-                        cur.execute(query)
-                        data = cur.fetchall()
-                        type_info = get_major_type_info(major_type)
-                        possible_majors = {}
-                        with concurrent.futures.ThreadPoolExecutor() as e:
-                                future = [
-                                    e.submit(request_major_info, major, possible_majors) 
-                                    for major in data
-                                ]
-                                for res in concurrent.futures.as_completed(future):
-                                        res.result()
-                else:
-                        return 'Please enter preferences'
-                return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= possible_majors, majors = data)
-        return render_template("user_form_majors.html")
+        majors_list = list(parameters.listvalues())
+        if majors_list:
+            major_type, query = find_major(majors_list)
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT * FROM user_major_type wHERE user = %s",[session['username']])
+            results = cur.fetchall()
 
-def request_major_info(major, possible_majors):
-        major = major[0]
-        possible_majors[major] = possible_majors.get(major, None)
-        print(major)
-        unpacked_args = get_major_info(major)
-        if unpacked_args != "Not found":
-                desc_text, classes, jobs, salaries = unpacked_args
-                possible_majors[major] = (desc_text, classes, jobs, salaries)
+            if len(results) == 0:
+                print(results)
+                cur.execute("INSERT INTO user_major_type(user, major_type) VALUES(%s, %s)", (session['username'], major_type))
+            else:
+                cur.execute("UPDATE user_major_type SET major_type=%s WHERE user=%s", (major_type, session['username']))
+            mysql.connection.commit()
+
+            cur.execute(query)
+            data = cur.fetchall()
+            type_info = get_major_type_info(major_type)
+            possible_majors = {}
+
+            for major in data:
+                major = major[0]
+                possible_majors[major] = possible_majors.get(major, None)
+                unpacked_args = get_major_info(major)
+                if unpacked_args != "Not found":
+                    desc_text, classes, jobs, salaries = unpacked_args
+                    possible_majors[major] = (desc_text, classes, jobs, salaries)
+        else:
+            return 'Please enter preferences'
+        return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= possible_majors, majors = data)
+    return render_template("user_form_majors.html")
+
 
 
 nav.init_app(app)
 
 if __name__ == "__main__":
-        app.run(host="0.0.0.0", debug=True, port =5008)
+        app.run(host="0.0.0.0", debug=True, port =5004)
+
