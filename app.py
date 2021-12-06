@@ -73,8 +73,8 @@ def home():
     # get some of your saved universities
     columns = 'u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment'
     cur = mysql.connection.cursor()
-    sql_query = "SELECT u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment FROM saved_universities s, university u WHERE s.user = %s and s.university_id = u.university_id;"
-    cur.execute(sql_query, [session['username']])
+    sql_query = "SELECT u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment FROM saved_universities s, university u WHERE s.user = %(username)s and s.university_id = u.university_id;"
+    cur.execute(sql_query, {'username': session['username']})
     mysql.connection.commit()
     results = cur.fetchall()
     cur.close()
@@ -83,22 +83,24 @@ def home():
     #get your personality type for majors
 
     cur = mysql.connection.cursor()
-    sql_query = "SELECT major_type FROM user_major_type WHERE user = %s"
-    cur.execute(sql_query, [session['username']])
+    sql_query = "SELECT major_type FROM user_major_type WHERE user = %(username)s"
+    cur.execute(sql_query, {'username': session['username']})
     mysql.connection.commit()
     results = cur.fetchall()
+    major_type = ""
+    possible_majors = []
+    if results:
+        major_type = results[0]
+        query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
 
-    major_type = results[0][0]
-    query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
+        cur.execute(query)
+        data = cur.fetchall()
+        type_info = get_major_type_info(major_type)
+        possible_majors = {}
 
-    cur.execute(query)
-    data = cur.fetchall()
-    type_info = get_major_type_info(major_type)
-    possible_majors = {}
-
-    for major in data:
-        major = major[0]
-        possible_majors[major] = possible_majors.get(major, None)
+        for major in data:
+            major = major[0]
+            possible_majors[major] = possible_majors.get(major, None)
 
 
     return render_template("home.html", universities=universities, major_type=major_type, possible_majors=possible_majors)
