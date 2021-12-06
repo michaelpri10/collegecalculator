@@ -203,7 +203,7 @@ def get_major_type_info(major):
 	soup = BeautifulSoup(html_text, 'html.parser')
 
 	sub_title = str(soup.find('h3'))[4:-5]
-	len_front = 61 + len(major)
+	len_front = 60 + len(major)
 	if major.lower() == "realistic":
 		num = 2
 	else:

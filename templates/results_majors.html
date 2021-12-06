@@ -1,17 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Search Colleges</title>
+{% extends "index.html" %}
+
+{% block styles %}
+{{super()}}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
-</head>
-<body>
-    <div class="result-container">
-		<span class="uni-heading">{{ major_type }}</span>
-		{{ majors }}
-		<br><br>
-		{{ major_info }}
-		<br><br>
-		{{ type_stats }}
-    </div>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+    <div class="result-container" style="color:white;">
+		<div class="uni-card" style="width:90%;">
+			<span class="uni-heading">You are the {{ major_type }} Type!</span>	
+			<br>
+			Our information tells us that you are the {{ major_type }} Type.
+			{{ major_info[1] }}
+			<br>
+			<br>
+			<span class="uni-heading">Possible Majors for You:</span>
+			{% for major in type_stats.keys() %}
+			<div>
+				<br>
+				<b>{{ major }}</b>:
+				<br>
+				{{ type_stats[major][0] }}
+				<br>
+				Classes to take: <br>
+				{% for class in type_stats[major][1] %}
+				<ul>
+					<li class="uni-info">{{class}}
+				</ul>
+				{% endfor %}
+				Career Paths: <br>
+				{% for path in type_stats[major][2] %}
+				<ul>
+					<li class="uni-info">{{path}}
+				</ul>
+				{% endfor %}
+				Salaries: <br>
+				{% for sal_type, sal in type_stats[major][3].items() %}
+				<ul>
+					<li class="uni-info">{{ sal_type }}: {{ sal }}
+				</ul>
+				{% endfor %}
+				<br>
+			</div>
+			{% endfor %}
+
+			<br><br>
+		</div>
+	</div>
+{% endblock %}
