@@ -1,3 +1,7 @@
+from bs4 import BeautifulSoup
+import re
+import requests
+
 ENROLLMENT_BOUNDS = {
     0: [0, 5000],
     1: [5000, 15000],
