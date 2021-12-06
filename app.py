@@ -8,6 +8,7 @@ from flask_nav.elements import *
 
 import yaml
 from collections import namedtuple
+import concurrent.futures
 from query_schools import generate_query, get_college, get_college_basic, find_major, get_major_type_info, get_major_info
 from werkzeug.routing import BaseConverter
 import requests
@@ -258,30 +259,37 @@ def college_info(id):
 #find majors
 @app.route(path+ "/search_majors", methods=["GET","POST"])
 def find_majors():
-	if request.method == "POST":
-		parameters = request.form
+        if request.method == "POST":
+                parameters = request.form
 
-		majors_list = list(parameters.listvalues())
-		if majors_list:
-			major_type, query = find_major(majors_list)
-			cur = mysql.connection.cursor()
-			cur.execute(query)
-			data = cur.fetchall()
-			type_info = get_major_type_info(major_type)
-			possible_majors = {}
+                majors_list = list(parameters.listvalues())
+                if majors_list:
+                        major_type, query = find_major(majors_list)
+                        cur = mysql.connection.cursor()
+                        cur.execute(query)
+                        data = cur.fetchall()
+                        type_info = get_major_type_info(major_type)
+                        possible_majors = {}
+                        with concurrent.futures.ThreadPoolExecutor() as e:
+                                future = [
+                                    e.submit(request_major_info, major, possible_majors) 
+                                    for major in data
+                                ]
+                                for res in concurrent.futures.as_completed(future):
+                                        res.result()
+                else:
+                        return 'Please enter preferences'
+                return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= possible_majors, majors = data)
+        return render_template("user_form_majors.html")
 
-			for major in data:
-				major = major[0]
-				possible_majors[major] = possible_majors.get(major, None)
-				print(major)
-				unpacked_args = get_major_info(major)
-				if unpacked_args != "Not found":
-					desc_text, classes, jobs, salaries = unpacked_args
-					possible_majors[major] = (desc_text, classes, jobs, salaries)
-		else:
-			return 'Please enter preferences'
-		return render_template('results_majors.html', major_type = major_type, major_info = type_info, type_stats= possible_majors, majors = data)
-	return render_template("user_form_majors.html")
+def request_major_info(major, possible_majors):
+        major = major[0]
+        possible_majors[major] = possible_majors.get(major, None)
+        print(major)
+        unpacked_args = get_major_info(major)
+        if unpacked_args != "Not found":
+                desc_text, classes, jobs, salaries = unpacked_args
+                possible_majors[major] = (desc_text, classes, jobs, salaries)
 
 
 nav.init_app(app)
