@@ -1,0 +1,49 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h2></h2>
+
+<div class="result-container">
+    <p>Finding the right college can be hard, thats why we offer you a premium service that matches your personal preferences and scores with different universities, so dont wait and start searching.</p>
+    <br>
+    <br>
+    <div class="result-container">
+        <a href="{{ url_for('find_colleges') }}"><button type="button" class="more-info large">Search for Best Colleges</button></a>
+    </div>
+    <br>
+    <br>
+    <h3>Your personality type is {{ major_type }} </h3>
+    <div class="result-container">
+    <p>Here is a list of majors that fit your characteristics</p>
+    </div>
+
+    <div class="result-container">
+        {% for major in possible_majors %}
+            <p>- {{ major }} - </p>
+        {% endfor %}
+    </div>
+
+    <h2>Here are some of the best fit universities for you</h2>
+</div>
+
+<div class="result-container">
+    {% for uni in universities %}
+    <div class="uni-card">
+        <span class="uni-heading">{{ uni.name }}</span>
+        <br>
+        <ul>
+            <li class="uni-info">{{ uni.city }}, {{ uni.state }}</li>
+            <li class="uni-info">Campus Location: {{ uni.campus_location }}</li>
+            <li class="uni-info">Total Enrollment: {{ uni.total_enrollment }}</li>
+            <li clas="uni-info"><a href="{{ uni.website }}">Website</a></li>
+        </ul>
+        <a href="{{ url_for('college_info', id=uni.university_id) }}" class="uni-link">
+            <button type="button" class="more-info">
+            More Info
+            </button>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
