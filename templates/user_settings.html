@@ -3,17 +3,22 @@
 
 {% block content %}
 <h1></h1>
-<div class="login" id="login">
+<div class="settings" id="settings">
         <h3>Profile page for {{ username }}</h3>
 
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if result %}
+        <p class="result">{{ result }}</p>
+        {% endif %}
   	<form method="post" class="user-form" name="update_delete_form">
-		<dev class="heading">
+		<div class="heading">
 			Change Password
-		</dev>
+		</div>
 		<br>
 		<br>
 
-		<input type="text" name="username" placeholder="Username"/><br><br>
 		<input type="password" name="oldpassword" placeholder="Old Password"/><br>
 		<input type="password" name="newpassword" placeholder="New Password"/><br><br>
 		<button class="simple-button" type="submit" class="button" name="submit_button" value="update">Change Password</button>
@@ -24,7 +29,6 @@
 		<br>
 		<br>
 
-		<input type="text" name="delete_user" placeholder="Username"/><br>
 		<input type="password" name="delete_pass" placeholder="Password"/><br><br>
 		<button class="simple-button" type="submit" name="submit_button" value="delete">Delete Account</button>
                 <br><br>

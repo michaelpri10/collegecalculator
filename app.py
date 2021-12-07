@@ -135,11 +135,19 @@ def login():
                         session["logged_in"] = True
                         return redirect(url_for('home'))
                 else:
-                        return  'Oops'
+                        return render_template('login.html', error='Username/password not found')
 
         if session.get('logged_in', False):
                 return redirect(url_for('find_colleges'))
 
+        if "error" in session:
+            error = session["error"]
+            del session["error"]
+            return render_template('login.html', error=error)
+        elif "result" in session:
+            result = session["result"]
+            del session["result"]
+            return render_template('login.html', result=result)
         return render_template('login.html')
 
 # create account window
@@ -158,14 +166,14 @@ def create_account():
                 login_exists = cur.fetchall()
 
                 if len(login_exists) != 0:
-                        return 'Username already in use. Please choose another.'
-                        return redirect(url_for('/create_account'))
+                        return render_template('create_account.html', error='Username already in use. Please choose another.')
                 else:
                         #insert into the database
                         cur.execute("INSERT INTO login_information(username, password) VALUES(%(new_username)s, %(new_password)s)",
                             {'new_username': new_username, 'new_password': new_password}
                         )
                         mysql.connection.commit()
+                        session["result"] = "Account created successfully."
                         return redirect(url_for('login'))
 
                 cur.close()
@@ -184,7 +192,6 @@ def user_settings():
 
                 #Update account password
                 if form_details['submit_button'] == 'update':
-                        username = form_details['username']
                         old_password = form_details['oldpassword']
                         new_password = form_details['newpassword']
 
@@ -194,33 +201,36 @@ def user_settings():
                         login_exists = cur.fetchall()
 
                         if len(login_exists) == 0:
-                                return 'Incorrect account information. Account settings not saved.'
+                                return render_template('user_settings.html', username=session['username'], error='Incorrect account information. Account settings not saved.')
                         else:
                                 cur.execute("UPDATE login_information SET password=%(new_password)s WHERE username=%(username)s", {'new_password': new_password, 'username': session["username"]})
                                 mysql.connection.commit()
                                 cur.close()
-                                return 'Password updated.'
+                                return render_template('user_settings.html', username=session['username'], result='Password updated.')
 
                 #Delete Account
                 elif form_details['submit_button'] == 'delete':
-                        username = form_details['delete_user']
                         password = form_details['delete_pass']
 
                         #check if information is correct
                         cur.execute("SELECT * from login_information where username = %(username)s and password = %(password)s",
-                            {'username': username, 'password': password}
+                            {'username': session['username'], 'password': password}
                         )
                         login_exists = cur.fetchall()
 
                         if len(login_exists) == 0:
-                                return 'Incorrect account information. Account settings not saved.'
+                                return render_template('user_settings.html', username=session['username'], error='Incorrect account information. Account not deleted.')
                         else:
-                                cur.execute("DELETE FROM login_information where username=%(username)s and password=%(password)s", {'username': username, 'password': password})
+                                cur.execute("DELETE FROM login_information where username=%(username)s and password=%(password)s", {'username': session['username'], 'password': password})
                                 mysql.connection.commit()
                                 cur.close()
-                        return 'Account Deleted.'
+                                session["logged_in"] = False
+                                del session["username"]
+                                session["error"] = "Account Deleted."
+                                return redirect(url_for('login'))
+
                 elif form_details['submit_button'] == 'logout':
-                        session['logged_in'] = False
+                        session["logged_in"] = False
                         if 'username' in session:
                             del session['username']
                         return redirect(url_for('login'))
@@ -242,11 +252,21 @@ def find_colleges():
         uni_ids = []
         for i in results:
             uni_ids.append(i[0])
-        return redirect(url_for("results", ids=uni_ids))
+        session["uni_ids"] = uni_ids
+        return redirect(url_for("results"))
+    if "error" in session:
+        error = session["error"]
+        del session["error"]
+        return render_template("user_form.html", error=error)
     return render_template("user_form.html")
 
-@app.route(path + "/results/<int_list:ids>", methods=["GET", "POST"])
-def results(ids):
+@app.route(path + "/results", methods=["GET", "POST"])
+def results():
+    ids = session.get("uni_ids", [])
+    if not ids:
+        session["error"] = "No universities found"
+        return redirect(url_for('find_colleges'))
+    del session["uni_ids"]
     sql_query = get_college_basic(ids)
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
@@ -340,7 +360,7 @@ def find_majors():
                     res.result()
                     
         else:
-            return 'Please enter preferences'
+            return render_template('user_form_majors.html', error='Please enter preferences')
         return render_template('results_majors.html', major_type=major_type, major_info=type_info, type_stats=possible_majors, majors=data)
 
     return render_template("user_form_majors.html")

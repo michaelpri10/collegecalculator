@@ -201,3 +201,15 @@
     padding: 30px;
     margin: 30px;
 }
+
+.error {
+    color: red;
+}
+
+.result {
+    color: green;
+}
+
+.settings {
+    text-align: center;
+}
