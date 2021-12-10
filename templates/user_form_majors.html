@@ -14,7 +14,14 @@
 </head>
 <body>
 
+{% block navbar %}
+{{nav.top.render()}}
+{% endblock %}
+
 <form method="post" class="user-form">
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
 	<div class="form-step" id="interests-step">
         <div class="step-heading">Interests</div>
         {% include 'forms/interests.html' %} 

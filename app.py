@@ -272,6 +272,10 @@ def find_colleges():
         del session["uni_ids"]
     if request.method == "POST":
         parameters = request.form
+        ranks = ['location_rank', 'academics_rank', 'finance_rank', 'other_rank']
+        if not all(rank in parameters for rank in ranks):
+            return render_template('user_form.html', error='Must set all priorities')
+
         sql_query, order = generate_query(parameters)
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
