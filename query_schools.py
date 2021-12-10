@@ -25,7 +25,7 @@ def get_college_basic(uni_id_list):
     order_by_str = f'{order_by_str} END) ASC'
 
     columns = "u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment"
-    query  = f'SELECT {columns} FROM university u WHERE {where_str} {order_by_str};' #ORDER_BY CASE u.university_id'
+    query  = f'SELECT {columns} FROM university u WHERE {where_str} {order_by_str};'
     print(query)
     return query
 

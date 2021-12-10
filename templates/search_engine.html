@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<form method="post" class="search-engine">
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+    <input type="text" name="term" class="search-box" placeholder="Enter search term"></input>
+    <button type="submit" name="search" class="next-button search-button">Search</button>
+</form>
+{% endblock %}

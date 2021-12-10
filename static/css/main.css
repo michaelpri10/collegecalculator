@@ -213,3 +213,26 @@
 .settings {
     text-align: center;
 }
+
+.search-engine {
+    margin: 0 auto;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    background-color: #05445E;
+    border-radius: 5px;
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+}
+
+.search-box {
+    align-self: center;
+    width: 50%;
+    margin: 3% 0;
+    padding: 1%;
+    border-radius: 5px;
+}
+
+.search-button {
+    width: 25%;
+}

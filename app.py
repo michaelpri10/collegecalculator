@@ -29,7 +29,8 @@ class IntListConverter(BaseConverter):
 topbar = Navbar(
                 View('Home', 'home'),
                 View('MyUniversities', 'saved_universities'),
-                View('Search Colleges', 'find_colleges'),
+                View('Find Colleges', 'find_colleges'),
+                View('Search Engine', 'search_engine'),
                 View('Account', 'user_settings'),
                 View('Search Majors', 'find_majors')
                 )
@@ -240,12 +241,38 @@ def user_settings():
 
         return render_template("user_settings.html", username=session["username"])
 
+
 @app.route(path + "/search", methods=["GET", "POST"])
+def search_engine():
+    if "uni_ids" in session:
+        del session["uni_ids"]
+    if request.method == "POST":
+        parameters = request.form
+        if 'term' in parameters and parameters['term']:
+            term = parameters['term']
+            sql_query  = "SELECT university_id FROM university WHERE name like %(term)s ORDER BY total_enrollment DESC LIMIT 21"
+            print(sql_query)
+            cur = mysql.connection.cursor()
+            cur.execute(sql_query, {'term': "%" + term + "%"})
+            results = cur.fetchall()
+            uni_ids = []
+            for i in results:
+                uni_ids.append(i[0])
+            if not uni_ids:
+                return render_template("search_engine.html", error="No results found")
+            session["uni_ids"] = uni_ids
+            return redirect(url_for("results"))
+        else:
+            return render_template("search_engine.html", error="No search term")
+    return render_template("search_engine.html")
+
+@app.route(path + "/find", methods=["GET", "POST"])
 def find_colleges():
+    if "uni_ids" in session:
+        del session["uni_ids"]
     if request.method == "POST":
         parameters = request.form
         sql_query, order = generate_query(parameters)
-        print(order)
         cur = mysql.connection.cursor()
         cur.execute(sql_query)
         results = cur.fetchall()
@@ -258,6 +285,7 @@ def find_colleges():
         error = session["error"]
         del session["error"]
         return render_template("user_form.html", error=error)
+
     return render_template("user_form.html")
 
 @app.route(path + "/results", methods=["GET", "POST"])
@@ -266,7 +294,6 @@ def results():
     if not ids:
         session["error"] = "No universities found"
         return redirect(url_for('find_colleges'))
-    del session["uni_ids"]
     sql_query = get_college_basic(ids)
     cur = mysql.connection.cursor()
     cur.execute(sql_query)
