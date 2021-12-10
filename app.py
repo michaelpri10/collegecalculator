@@ -322,7 +322,7 @@ def saved_universities():
         university = request.form
         print(university['delete'])
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM saved_universities WHERE user = %s and university_id = %s;", (session['username'], university['delete']))
+        cur.execute("DELETE FROM saved_universities WHERE user = %(username)s and university_id = %(id)s;", {'username': session['username'], 'id': university['delete']})
         mysql.connection.commit()
         cur.close()
 
