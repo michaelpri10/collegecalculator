@@ -61,6 +61,9 @@ UNI_COLUMNS = ("university_id", "name", "city", "state", "website", "campus_loca
 UniversityCard = namedtuple('UniversityCard', CARD_COLUMNS)
 University = namedtuple('University', UNI_COLUMNS)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html')
 
 @app.route(path + '/')
 def index():
