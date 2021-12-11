@@ -9,6 +9,7 @@ ENROLLMENT_BOUNDS = {
     3: [30000, 10000000],
 }
 
+
 def get_college_basic(uni_id_list):
     where_str = ''
     order_by_str = 'ORDER BY (CASE'
@@ -25,9 +26,10 @@ def get_college_basic(uni_id_list):
     order_by_str = f'{order_by_str} END) ASC'
 
     columns = "u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment"
-    query  = f'SELECT {columns} FROM university u WHERE {where_str} {order_by_str};'
+    query = f'SELECT {columns} FROM university u WHERE {where_str} {order_by_str};'
     print(query)
     return query
+
 
 def get_college(uni_id):
     select_str = "SELECT u.university_id, u.name, u.city, u.state, u.website, u.campus_location, u.total_enrollment, si.control, si.religious, si.accepts_ap_credit, si.study_abroad, si.offers_rotc, si.has_football, si.has_basketball, si.ncaa_member, si.retention_rate, si.graduation_rate, adm.total_applicants, adm.total_admitted, adm.admission_rate, adm.male_applicants, adm.female_applicants, adm.male_admitted, adm.female_admitted, adm.sat_rw_25, adm.sat_rw_75, adm.sat_math_25, adm.sat_math_75, adm.act_25, adm.act_75, fin.in_state_price, fin.out_of_state_price, fin.average_price_after_aid, fin.percent_given_aid, di.percent_american_indian_native_alaskan, di.percent_asian, di.percent_hawaiian_pacific_islander, di.percent_black, di.percent_white, di.percent_hispanic, di.percent_other, di.percent_two_races"
@@ -84,7 +86,6 @@ def generate_query(params):
 
     from_str = f"FROM university as u, school_info as si, admission_stats as adm, financial_stats as fin, diversity_stats as di {majors_query}"
 
-
     # State selection
     location_order = []
     if state_location == 0:
@@ -103,7 +104,8 @@ def generate_query(params):
         upper_bound = ENROLLMENT_BOUNDS[int(max(size))][1]
         location_order.append(f"SUM(u.total_enrollment >= {lower_bound})")
         location_order.append(f"SUM(u.total_enrollment <= {upper_bound})")
-    location_str = "((" + " + ".join(location_order) + f") * {location_mult}) as location_score"
+    location_str = "((" + " + ".join(location_order) + \
+        f") * {location_mult}) as location_score"
 
     if location_order:
         select_str = f"{select_str}, {location_str}"
@@ -119,9 +121,11 @@ def generate_query(params):
     if act > 1:
         academics_order.append(f"SUM(adm.act_25 <= {act})")
     if majors:
-        academics_str = "(maj.majors_count + (" + " + ".join(academics_order) + f") * {academics_mult}) as academics_score"
+        academics_str = "(maj.majors_count + (" + " + ".join(academics_order) + \
+            f") * {academics_mult}) as academics_score"
     else:
-        academics_str = "((" + " + ".join(academics_order) + f") * {academics_mult}) as academics_score"
+        academics_str = "((" + " + ".join(academics_order) + \
+            f") * {academics_mult}) as academics_score"
 
     if academics_order:
         select_str = f"{select_str}, {academics_str}"
@@ -132,11 +136,13 @@ def generate_query(params):
     finance_order = []
     if tuition:
         if financial_aid:
-            finance_order.append(f"SUM(fin.percent_given_aid >= 50) + SUM(fin.average_price_after_aid <= {tuition})")
+            finance_order.append(
+                f"SUM(fin.percent_given_aid >= 50) + SUM(fin.average_price_after_aid <= {tuition})")
         else:
             price_state = "in_state_price" if state_location == 1 else "out_of_state_price"
             finance_order.append(f"SUM(fin.{price_state} <= {tuition})")
-    finance_str = "((" + " + ".join(finance_order) + f") * {finance_mult}) as finance_score"
+    finance_str = "((" + " + ".join(finance_order) + \
+        f") * {finance_mult}) as finance_score"
 
     if finance_order:
         select_str = f"{select_str}, {finance_str}"
@@ -158,7 +164,8 @@ def generate_query(params):
         other_order.append("SUM(si.offers_rotc = 1)")
     if ncaa is not None and int(ncaa):
         other_order.append("SUM(si.ncaa_member = 1)")
-    other_str = "((" + " + ".join(other_order) + f") * {other_mult}) as other_score"
+    other_str = "((" + " + ".join(other_order) + \
+        f") * {other_mult}) as other_score"
 
     if other_order:
         select_str = f"{select_str}, {other_str}"
@@ -175,7 +182,7 @@ def generate_query(params):
     }
     order = [ranks[rank] for rank in range(5, 1, -1)]
     order_str = "ORDER BY " + ", ".join(order) + ", u.name ASC"
-   
+
     limit_str = "LIMIT 21"
 
     columns = "university_id, name, city, state, website, campus_location, total_enrollment"
@@ -183,31 +190,35 @@ def generate_query(params):
 
 
 def find_major(majors_list):
-#second advanced function
-#NOTE: this does not seem too advanced, so maybe we can parse each major / type to describe what it is
-#calculate quiz output
-	major_dict = {}
-	for l in majors_list:
-		for major in l:
-			major_dict[major] = major_dict.get(major, 0) + 1
-	major_type = max(major_dict, key = major_dict.get)
+    # second advanced function
+    # NOTE: this does not seem too advanced, so maybe we can parse each major / type to describe what it is
+    # calculate quiz output
+    major_dict = {}
+    for l in majors_list:
+        for major in l:
+            major_dict[major] = major_dict.get(major, 0) + 1
+    major_type = max(major_dict, key=major_dict.get)
 
-#query for majors based on type
-	query = "SELECT major FROM majors_info WHERE type='" + str(major_type) + "'"
-	return major_type, query
+# query for majors based on type
+    query = "SELECT major FROM majors_info WHERE type='" + \
+        str(major_type) + "'"
+    return major_type, query
+
 
 def get_major_type_info(major):
-	URL = "https://acd.iupui.edu/explore/choose-your-major/connect-majors-to-careers/interests/" + major.lower() + "/index.html"
-	html_text = requests.get(URL).text
-	soup = BeautifulSoup(html_text, 'html.parser')
+    URL = "https://acd.iupui.edu/explore/choose-your-major/connect-majors-to-careers/interests/" + \
+        major.lower() + "/index.html"
+    html_text = requests.get(URL).text
+    soup = BeautifulSoup(html_text, 'html.parser')
 
-	sub_title = str(soup.find('h3'))[4:-5]
+    sub_title = str(soup.find('h3'))[4:-5]
 
-	desc = str(soup.find_all('div', class_="text", string=re.compile("These")))
-	desc = desc.split('. ', 1)[1]
-	desc = desc.split(' If not,')[0]
+    desc = str(soup.find_all('div', class_="text", string=re.compile("These")))
+    desc = desc.split('. ', 1)[1]
+    desc = desc.split(' If not,')[0]
 
-	return sub_title, desc
+    return sub_title, desc
+
 
 def get_major_info(major_name):
     major_path = "https://www.mymajors.com/college-majors/"
@@ -234,7 +245,8 @@ def get_major_info(major_name):
     careers_page = requests.get(career_url).text
 
     soup = BeautifulSoup(careers_page, "html.parser")
-    job_list = soup.find("ul", {"class": "cols2"}).get_text().strip().split('\n')
+    job_list = soup.find("ul", {"class": "cols2"}
+                         ).get_text().strip().split('\n')
     jobs = [job.strip() for job in job_list if job.strip()]
 
     salary_data = soup.find_all("td")
@@ -245,4 +257,3 @@ def get_major_info(major_name):
         salaries[label] = salary
 
     return desc_text, classes, jobs, salaries
-

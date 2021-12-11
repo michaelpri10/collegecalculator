@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Majors</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css">
@@ -12,58 +13,59 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
+
 <body>
 
-{% block navbar %}
-{{nav.top.render()}}
-{% endblock %}
+    {% block navbar %}
+    {{nav.top.render()}}
+    {% endblock %}
 
-<form method="post" class="user-form">
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
-	<div class="form-step" id="interests-step">
-        <div class="step-heading">Interests</div>
-        {% include 'forms/interests.html' %} 
-		<button type="button" class="next-button" id="interests-button">
-            Next Step ►
-        </button> 	
-    </div>
+    <form method="post" class="user-form">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <div class="form-step" id="interests-step">
+            <div class="step-heading">Interests</div>
+            {% include 'forms/interests.html' %}
+            <button type="button" class="next-button" id="interests-button">
+                Next Step ►
+            </button>
+        </div>
 
-	<div class="form-step" id="values-step">
-		<div class="step-heading">
-			<div id="values-back" class="back-button">↩</div>
-			Values
-		</div>
-		{% include 'forms/values.html' %} 
-		<button type="button" class="next-button" id="values-button">
-            Next Step ►
-        </button>
-	</div>
+        <div class="form-step" id="values-step">
+            <div class="step-heading">
+                <div id="values-back" class="back-button">↩</div>
+                Values
+            </div>
+            {% include 'forms/values.html' %}
+            <button type="button" class="next-button" id="values-button">
+                Next Step ►
+            </button>
+        </div>
 
-	<div class="form-step" id="talents-step">
-		<div class="step-heading">
-			<div id="talents-back" class="back-button">↩</div>
-			Talents
-		</div>
-		{% include 'forms/talents.html' %} 
-		<button type="button" class="next-button" id="talents-button">
-            Next Step ►
-        </button>
-	</div>
+        <div class="form-step" id="talents-step">
+            <div class="step-heading">
+                <div id="talents-back" class="back-button">↩</div>
+                Talents
+            </div>
+            {% include 'forms/talents.html' %}
+            <button type="button" class="next-button" id="talents-button">
+                Next Step ►
+            </button>
+        </div>
 
-	<div class="form-step" id="qualities-step">
-		<div class="step-heading">
-			<div id="qualities-back" class="back-button">↩</div>
-			Qualities
-		</div>
-		{% include 'forms/qualities.html' %}  
-        <button type="submit" class="next-button" id="qualities-button">
-            Submit
-        </button>
-	</div>
+        <div class="form-step" id="qualities-step">
+            <div class="step-heading">
+                <div id="qualities-back" class="back-button">↩</div>
+                Qualities
+            </div>
+            {% include 'forms/qualities.html' %}
+            <button type="submit" class="next-button" id="qualities-button">
+                Submit
+            </button>
+        </div>
 
-</form>
+    </form>
 
-<script src="{{ url_for('static', filename='js/main_majors.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main_majors.js') }}"></script>
 </body>

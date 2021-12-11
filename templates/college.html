@@ -13,16 +13,16 @@
 {% endblock %}
 
 {% block content %}
-    <div class="college">
-        <div class="header">
-            <div class="heading">{{ uni.name }}</div>
-            <div class="location">{{ uni.city }}, {{ uni.state }}</div>
-            <a class="site-link" href="https://{{ uni.website }}">Visit Website</a>
-        </div>
-        <br>
-        <div class="section">
-            <span class="section-heading">About</span>
-            <ul class="features">
+<div class="college">
+    <div class="header">
+        <div class="heading">{{ uni.name }}</div>
+        <div class="location">{{ uni.city }}, {{ uni.state }}</div>
+        <a class="site-link" href="https://{{ uni.website }}">Visit Website</a>
+    </div>
+    <br>
+    <div class="section">
+        <span class="section-heading">About</span>
+        <ul class="features">
             <li class="affiliation">
                 {{ uni.control }}, {{ "Religious" if uni.religious else "Non-religious" }} University
             </li>
@@ -39,35 +39,28 @@
             {% endif %}
             {% if uni.ncaa_member %}
             <li>NCAA Member</li>
-                <ul>
-                    {% if uni.has_football %}
-                    <li>Football</li>
-                    {% endif %}
-                    {% if uni.has_basketball %}
-                    <li>Basketball</li>
-                    {% endif %}
-                </ul>
+            <ul>
+                {% if uni.has_football %}
+                <li>Football</li>
+                {% endif %}
+                {% if uni.has_basketball %}
+                <li>Basketball</li>
+                {% endif %}
+            </ul>
             {% else %}
             <li>Not in NCAA</li>
             {% endif %}
-        </div>
+    </div>
 
-        <div class="section">
-            <span class="section-heading">Statistics</span>
-            <ul class="features">
+    <div class="section">
+        <span class="section-heading">Statistics</span>
+        <ul class="features">
             {% if uni.total_enrollment %}
             <li>Total Enrollment: {{ uni.total_enrollment }}
-            {% if uni.total_enrollment < 5000 %} 
-            (Small-sized)
-            {% elif uni.total_enrollment < 15000 %}
-            (Medium-sized)
-            {% elif uni.total_enrollment < 30000 %}
-            (Large-sized)
-            {% else %}
-            (Huge-sized)
-            {% endif %}
-            </li>
-            {% else %}
+                {% if uni.total_enrollment < 5000 %} (Small-sized) {% elif uni.total_enrollment < 15000 %}
+                    (Medium-sized) {% elif uni.total_enrollment < 30000 %} (Large-sized) {% else %} (Huge-sized) {%
+                    endif %} </li>
+                    {% else %}
             <li>Total Enrollment: No Data</li>
             {% endif %}
 
@@ -77,94 +70,98 @@
             <li>Price: {{ "${}".format(uni.in_state_price) if uni.in_state_price else "No Data" }}</li>
             {% else %}
             <li>In-State Price: {{ "${}".format(uni.in_state_price) if uni.in_state_price else "No Data" }}</li>
-            <li>Out-of-State Price: {{ "${}".format(uni.out_of_state_price) if uni.out_of_state_price else "No Data" }}</li>
+            <li>Out-of-State Price: {{ "${}".format(uni.out_of_state_price) if uni.out_of_state_price else "No Data" }}
+            </li>
             {% endif %}
-            <li>Average Price After Aid: {{ "${}".format(uni.average_price_after_aid) if uni.average_price_after_aid else "No Data" }}</li>
-            <li>Students Receiving Aid: {{ "{}%".format(uni.percent_given_aid) if uni.percent_given_aid else "No Data" }}</li>
-            </ul>
-        </div>
-        <div class="section">
-            <span class="section-heading">Admissions</span>
-            <ul class="features">
-                <li>Test Score Ranges (25th percentile to 75th percentile)</li>
-                <ul>
-                    {% if uni.sat_math_25 and uni.sat_math_75 %}
-                    <li>SAT Math Range: {{ uni.sat_math_25 }}-{{ uni.sat_math_75 }}</li>
-                    {% else %}
-                    <li>SAT Math Range: No Data</li>
-                    {% endif %}
-                    {% if uni.sat_rw_25 and uni.sat_rw_75 %}
-                    <li>SAT Reading Range: {{ uni.sat_rw_25 }}-{{ uni.sat_rw_75 }}</li>
-                    {% else %}
-                    <li>SAT Reading Range: No Data</li>
-                    {% endif %}
-                    {% if uni.act_25 and uni.act_75 %}
-                    <li>ACT Composite Range: {{ uni.act_25 }}-{{ uni.act_75 }}</li>
-                    {% else %}
-                    <li>ACT Composite Range: No Data</li>
-                    {% endif %}
-                </ul>
-                <li>Total Applicants: {{ uni.total_applicants or "No Data" }}</li>
-                <li>Total Admitted: {{ uni.total_admitted or "No Data" }}</li>
-                {% if uni.total_applicants and uni.total_admitted %}
-                <li>Admission Rate: {{ (uni.total_admitted * 100 / uni.total_applicants)|round(1) }}%</li>
-                {% else %}
-                <li>Admission Rate: No Data</li>
-                {% endif %}
-                {% if uni.total_admitted and uni.female_admitted %}
-                <li>{{ (uni.male_admitted * 100 / uni.total_admitted)|round(1) }}% Male, {{ (uni.female_admitted * 100 / uni.total_admitted)|round(1) }}% Female</li>
-                {% endif %}
-            </ul>
-        </div>
-        <div class="section">
-            <span class="section-heading">Demographics</span>
-            {% if uni.percent_black and uni.percent_white %}
-            <div id="chart-container"></div>
-            <script>
-                anychart.onDocumentReady(function() {
-                    var stats = [
-                        {{ uni.percent_white }}, {{ uni.percent_black }},
-                        {{ uni.percent_american_indian_native_alaskan }},
-                        {{ uni.percent_asian }},
-                        {{ uni.percent_hawaiian_pacific_islander }},
-                        {{ uni.percent_hispanic }}, {{ uni.percent_other }},
-                        {{ uni.percent_two_races }}
-                    ];
-                    var total = 0;
-                    for (var i = 0; i < stats.length; i++) {
-                        total += stats[i];
-                    }
-                    var data = [
-                        {x: "White", value: stats[0] / total},
-                        {x: "Black or African American", value: stats[1] / total},
-                        {x: "American Indian and Alaska Native", value: stats[2] / total},
-                        {x: "Asian", value: stats[3] / total},
-                        {x: "Native Hawaiian and Other Pacific Islander", value: stats[4] / total},
-                        {x: "Hispanic", value: stats[5] / total},
-                        {x: "Other", value: stats[6] / total},
-                        {x: "Two or More Races", value: stats[7] / total}
-                    ];
-
-                    var chart = anychart.pie();
-                    chart.data(data);
-                    chart.legend().position('bottom');
-                    chart.legend().itemsLayout('horizontal');
-                    chart.radius('50%');
-                    chart.container('chart-container');
-                    chart.draw();
-                });
-            </script>
-            {% else %}
-            <span>No Data</span>
-            {% endif %}
-        </div>
-        <div class="section" id="programs">
-            <span class="section-heading">Academic Programs</span>
-            <ul id="major-list">
-            {% for program in majors %}
-                <li class="program-name">{{ program }}</li>
-            {% endfor %}
-            </ul>
-        </div>
+            <li>Average Price After Aid: {{ "${}".format(uni.average_price_after_aid) if uni.average_price_after_aid
+                else "No Data" }}</li>
+            <li>Students Receiving Aid: {{ "{}%".format(uni.percent_given_aid) if uni.percent_given_aid else "No Data"
+                }}</li>
+        </ul>
     </div>
+    <div class="section">
+        <span class="section-heading">Admissions</span>
+        <ul class="features">
+            <li>Test Score Ranges (25th percentile to 75th percentile)</li>
+            <ul>
+                {% if uni.sat_math_25 and uni.sat_math_75 %}
+                <li>SAT Math Range: {{ uni.sat_math_25 }}-{{ uni.sat_math_75 }}</li>
+                {% else %}
+                <li>SAT Math Range: No Data</li>
+                {% endif %}
+                {% if uni.sat_rw_25 and uni.sat_rw_75 %}
+                <li>SAT Reading Range: {{ uni.sat_rw_25 }}-{{ uni.sat_rw_75 }}</li>
+                {% else %}
+                <li>SAT Reading Range: No Data</li>
+                {% endif %}
+                {% if uni.act_25 and uni.act_75 %}
+                <li>ACT Composite Range: {{ uni.act_25 }}-{{ uni.act_75 }}</li>
+                {% else %}
+                <li>ACT Composite Range: No Data</li>
+                {% endif %}
+            </ul>
+            <li>Total Applicants: {{ uni.total_applicants or "No Data" }}</li>
+            <li>Total Admitted: {{ uni.total_admitted or "No Data" }}</li>
+            {% if uni.total_applicants and uni.total_admitted %}
+            <li>Admission Rate: {{ (uni.total_admitted * 100 / uni.total_applicants)|round(1) }}%</li>
+            {% else %}
+            <li>Admission Rate: No Data</li>
+            {% endif %}
+            {% if uni.total_admitted and uni.female_admitted %}
+            <li>{{ (uni.male_admitted * 100 / uni.total_admitted)|round(1) }}% Male, {{ (uni.female_admitted * 100 /
+                uni.total_admitted)|round(1) }}% Female</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="section">
+        <span class="section-heading">Demographics</span>
+        {% if uni.percent_black and uni.percent_white %}
+        <div id="chart-container"></div>
+        <script>
+            anychart.onDocumentReady(function () {
+                var stats = [
+                    {{ uni.percent_white }}, {{ uni.percent_black }},
+                {{ uni.percent_american_indian_native_alaskan }},
+                {{ uni.percent_asian }},
+                {{ uni.percent_hawaiian_pacific_islander }},
+                {{ uni.percent_hispanic }}, {{ uni.percent_other }},
+                {{ uni.percent_two_races }}
+                    ];
+            var total = 0;
+            for (var i = 0; i < stats.length; i++) {
+                total += stats[i];
+            }
+            var data = [
+                { x: "White", value: stats[0] / total },
+                { x: "Black or African American", value: stats[1] / total },
+                { x: "American Indian and Alaska Native", value: stats[2] / total },
+                { x: "Asian", value: stats[3] / total },
+                { x: "Native Hawaiian and Other Pacific Islander", value: stats[4] / total },
+                { x: "Hispanic", value: stats[5] / total },
+                { x: "Other", value: stats[6] / total },
+                { x: "Two or More Races", value: stats[7] / total }
+            ];
+
+            var chart = anychart.pie();
+            chart.data(data);
+            chart.legend().position('bottom');
+            chart.legend().itemsLayout('horizontal');
+            chart.radius('50%');
+            chart.container('chart-container');
+            chart.draw();
+                });
+        </script>
+        {% else %}
+        <span>No Data</span>
+        {% endif %}
+    </div>
+    <div class="section" id="programs">
+        <span class="section-heading">Academic Programs</span>
+        <ul id="major-list">
+            {% for program in majors %}
+            <li class="program-name">{{ program }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

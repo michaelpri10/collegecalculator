@@ -2,34 +2,35 @@
 
 {% block styles %}
 {{super()}}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}
 
 {% block content %}
-    <div class="result-container">
-        {% for uni in universities %}
-        <div class="uni-card">
-            <span class="uni-heading">{{ uni.name }}</span>
-            <br>
-            <ul>
-                <li class="uni-info">{{ uni.city }}, {{ uni.state }}</li>
-                <li class="uni-info">Campus Location: {{ uni.campus_location }}</li>
-                <li class="uni-info">Total Enrollment: {{ uni.total_enrollment }}</li>
-                <li clas="uni-info"><a href="{{ uni.website }}">Website</a></li>
-            </ul>
-            <a href="{{ url_for('college_info', id=uni.university_id) }}" class="uni-link">
-                <button type="button" class="more-info">
+<div class="result-container">
+    {% for uni in universities %}
+    <div class="uni-card">
+        <span class="uni-heading">{{ uni.name }}</span>
+        <br>
+        <ul>
+            <li class="uni-info">{{ uni.city }}, {{ uni.state }}</li>
+            <li class="uni-info">Campus Location: {{ uni.campus_location }}</li>
+            <li class="uni-info">Total Enrollment: {{ uni.total_enrollment }}</li>
+            <li clas="uni-info"><a href="{{ uni.website }}">Website</a></li>
+        </ul>
+        <a href="{{ url_for('college_info', id=uni.university_id) }}" class="uni-link">
+            <button type="button" class="more-info">
                 More Info
-                </button>
-            </a>
-            <br>
-            <br>
+            </button>
+        </a>
+        <br>
+        <br>
 
-            <form method="post">
-                <button type="button submit" name="save" class="more-info uni-link" value="{{ uni.university_id }}">Save</button>
-            </form>
-        </div>
-        {% endfor %}
+        <form method="post">
+            <button type="button submit" name="save" class="more-info uni-link"
+                value="{{ uni.university_id }}">Save</button>
+        </form>
     </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

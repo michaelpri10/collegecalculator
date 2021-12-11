@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Fields of Study</title>
-    
-    
+
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,69 +17,69 @@
 </head>
 
 <body>
-    
+
     {% block navbar %}
     {{nav.top.render()}}
     {% endblock %}
 
-<form method="post" class="user-form">
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
-    <div class="form-step" id="location-step">
-        <div class="step-heading">Location Preferences</div>
-        {% include 'forms/location.html' %}
-        <button type="button" class="next-button" id="location-button">
-            Next Step ►
-        </button>
-    </div>
-
-    <div class="form-step" id="majors-step">
-        <div class="step-heading">
-            <div id="majors-back" class="back-button">↩</div>
-            Academic Preferences
+    <form method="post" class="user-form">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <div class="form-step" id="location-step">
+            <div class="step-heading">Location Preferences</div>
+            {% include 'forms/location.html' %}
+            <button type="button" class="next-button" id="location-button">
+                Next Step ►
+            </button>
         </div>
-        {% include 'forms/majors.html' %}
-        <hr class="separator">
-        {% include 'forms/scores.html' %}
-        <button type="button" class="next-button" id="majors-button">
-            Next Step ►
-        </button>
-    </div>
 
-    <div class="form-step" id="finance-step">
-        <div class="step-heading">
-            <div id="finance-back" class="back-button">↩</div>
-            Financial Preferences
+        <div class="form-step" id="majors-step">
+            <div class="step-heading">
+                <div id="majors-back" class="back-button">↩</div>
+                Academic Preferences
+            </div>
+            {% include 'forms/majors.html' %}
+            <hr class="separator">
+            {% include 'forms/scores.html' %}
+            <button type="button" class="next-button" id="majors-button">
+                Next Step ►
+            </button>
         </div>
-        {% include 'forms/finance.html' %}
-        <button type="button" class="next-button" id="finance-button">
-            Next Step ►
-        </button>
-    </div>
 
-    <div class="form-step" id="other-step">
-        <div class="step-heading">
-            <div id="other-back" class="back-button">↩</div>
-            Other Preferences
+        <div class="form-step" id="finance-step">
+            <div class="step-heading">
+                <div id="finance-back" class="back-button">↩</div>
+                Financial Preferences
+            </div>
+            {% include 'forms/finance.html' %}
+            <button type="button" class="next-button" id="finance-button">
+                Next Step ►
+            </button>
         </div>
-        {% include 'forms/other.html' %}
-        <button type="button" class="next-button" id="other-button">
-            Next Step ►
-        </button>
-    </div>
 
-    <div class="form-step" id="priority-step">
-        <div class="step-heading">
-            <div id="priority-back" class="back-button">↩</div>
-            Priorities
+        <div class="form-step" id="other-step">
+            <div class="step-heading">
+                <div id="other-back" class="back-button">↩</div>
+                Other Preferences
+            </div>
+            {% include 'forms/other.html' %}
+            <button type="button" class="next-button" id="other-button">
+                Next Step ►
+            </button>
         </div>
-        {% include 'forms/priorities.html' %}
-        <button type="submit" class="next-button" id="other-button">
-            Submit
-        </button>
-    </div>
 
-</form>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <div class="form-step" id="priority-step">
+            <div class="step-heading">
+                <div id="priority-back" class="back-button">↩</div>
+                Priorities
+            </div>
+            {% include 'forms/priorities.html' %}
+            <button type="submit" class="next-button" id="other-button">
+                Submit
+            </button>
+        </div>
+
+    </form>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
