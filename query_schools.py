@@ -233,31 +233,35 @@ def get_major_info(major_name):
     desc = soup.find("p", {"class": "lead"}).get_text()
     desc_text = desc.split('\n')[1].strip()
     if desc_text == default_text:
-        return "Not found"
+        return False
     class_list = soup.find("ul", {"class": "cols3"})
-    if type(class_list) == None:
-        return "Not found"
-
-    class_list = class_list.get_text().strip().split('\n')
-    classes = [cl.strip() for cl in class_list if cl.strip()]
+    classes = []
+    if type(class_list) is None:
+        classes = ["No Data Found"]
+    else:
+        class_list = class_list.get_text().strip().split('\n')
+        classes = [cl.strip() for cl in class_list if cl.strip()]
 
     career_url = "https://www.mymajors.com/careers/" + major + "-major"
     careers_page = requests.get(career_url).text
 
     soup = BeautifulSoup(careers_page, "html.parser")
-    job_list = soup.find("ul", {"class": "cols2"}
-                         )
-    if job_list != None:
-        job_list = job_list.get_text().strip().split('\n')
+    job_list = soup.find("ul", {"class": "cols2"})
+    jobs = []
+    if job_list is None:
+        jobs = ["No Data Found"]
     else:
-        return "Not Found"
-    jobs = [job.strip() for job in job_list if job.strip()]
+        job_list = job_list.get_text().strip().split('\n')
+        jobs = [job.strip() for job in job_list if job.strip()]
 
     salary_data = soup.find_all("td")
     salaries = {}
     for i in range(0, len(salary_data), 2):
-        label = salary_data[i].get_text().strip()
-        salary = salary_data[i+1].get_text().strip()
-        salaries[label] = salary
+        if (i + 1) < len(salary_data):
+            label = salary_data[i].get_text().strip()
+            salary = salary_data[i+1].get_text().strip()
+            salaries[label] = salary
+    if not len(salaries):
+        salaries["Data"] = "Not Found"
 
     return desc_text, classes, jobs, salaries

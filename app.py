@@ -26,8 +26,8 @@ topbar = Navbar(
     View('MyUniversities', 'saved_universities'),
     View('Find Colleges', 'find_colleges'),
     View('Search Engine', 'search_engine'),
-    View('Account', 'user_settings'),
-    View('Search Majors', 'find_majors')
+    View('Search Majors', 'find_majors'),
+    View('Account', 'user_settings')
 )
 # registers the "top" menubar
 nav = Nav()
@@ -415,6 +415,11 @@ def find_majors():
 
         else:
             return render_template('user_form_majors.html', error='Please enter preferences')
+
+        for major, i in possible_majors.items():
+            print(major)
+            print(i)
+            print('-------')
         return render_template('results_majors.html', major_type=major_type, major_info=type_info, type_stats=possible_majors, majors=data)
 
     return render_template("user_form_majors.html")
@@ -424,7 +429,7 @@ def request_major_info(major, possible_majors):
     major = major[0]
     possible_majors[major] = possible_majors.get(major, None)
     unpacked_args = get_major_info(major)
-    if unpacked_args != "Not found":
+    if unpacked_args:
         desc_text, classes, jobs, salaries = unpacked_args
         possible_majors[major] = (desc_text, classes, jobs, salaries)
 
