@@ -6,6 +6,9 @@
 {% endblock %}
 
 {% block content %}
+{% if error %}
+<p class="error" style="text-align: center;">{{ error }}</p>
+{% endif %}
 <div class="result-container">
     {% for uni in universities %}
     <div class="uni-card">

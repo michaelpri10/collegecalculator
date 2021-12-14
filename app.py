@@ -326,10 +326,17 @@ def results():
         university = request.form
         print(university['save'])
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO saved_universities(user, university_id) VALUES(%(username)s, %(save)s);", {
-                    'username': session['username'], 'save': university['save']})
+        cur.execute("SELECT * FROM saved_universities WHERE user = %(username)s AND  university_id = %(save)s;", {
+            'username': session['username'], 'save': university['save']
+        })
+        check = cur.fetchall()
+        if len(check):
+            return render_template('results.html', universities=universities, error="University already saved")
 
-        print('WORKED')
+        cur.execute("INSERT INTO saved_universities(user, university_id) VALUES(%(username)s, %(save)s);", {
+            'username': session['username'], 'save': university['save']
+        })
+
         mysql.connection.commit()
         cur.close()
     return render_template('results.html', universities=universities)
