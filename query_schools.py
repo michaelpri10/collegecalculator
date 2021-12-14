@@ -246,7 +246,11 @@ def get_major_info(major_name):
 
     soup = BeautifulSoup(careers_page, "html.parser")
     job_list = soup.find("ul", {"class": "cols2"}
-                         ).get_text().strip().split('\n')
+                         )
+    if job_list != None:
+        job_list = job_list.get_text().strip().split('\n')
+    else:
+        return "Not Found"
     jobs = [job.strip() for job in job_list if job.strip()]
 
     salary_data = soup.find_all("td")
