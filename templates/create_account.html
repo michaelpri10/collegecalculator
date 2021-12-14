@@ -17,6 +17,10 @@ Create Account
 </div>
 
 <div class="login-box">
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
     <h1>Create Account</h1>
     <form method="POST">
         <div class="user-box">
